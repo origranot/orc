@@ -28,4 +28,4 @@ COPY --from=builder /app/node_modules ./node_modules
 EXPOSE 3000
 
 # Start the application
-CMD sh -c "npx nx run prisma:migrate-prod && cd web && pnpm start"
+CMD sh -c "npx nx run prisma:migrate-prod && cd web && npm start"
