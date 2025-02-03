@@ -7,13 +7,22 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/libs/cost-calculator",
         "tsConfig": "libs/cost-calculator/tsconfig.lib.json",
         "packageJson": "libs/cost-calculator/package.json",
         "main": "libs/cost-calculator/src/index.ts",
-        "assets": ["libs/cost-calculator/*.md"]
+        "assets": [
+          "libs/cost-calculator/*.md"
+        ]
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
       }
     }
   }

@@ -10,7 +10,7 @@ import { useState } from "react";
 
 type Interval = "month" | "year";
 
-export const toHumanPrice = (price: number, decimals: number = 2) => {
+export const toHumanPrice = (price: number, decimals = 2) => {
   return Number(price / 100).toFixed(decimals);
 };
 const demoPrices = [

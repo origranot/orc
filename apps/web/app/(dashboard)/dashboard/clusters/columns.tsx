@@ -18,23 +18,58 @@ import { GetAllClustersResponse } from './page';
 import { useRouter } from 'next/navigation';
 import { SortButton } from '@orc/web/components/data-table/utils';
 
+const ClusterNameCell = ({ row }: { row: any }) => {
+  const { push } = useRouter();
+
+  return (
+    <div className="cursor-pointer underline" onClick={() => push(`/dashboard/clusters/${row.original.id}`)}>
+      {row.original.name}
+    </div>
+  );
+};
+
+const ActionsCell = ({ row, table }: { row: any; table: any }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { push } = useRouter();
+
+  const handleDelete = async () => {
+    await deleteCluster(row.original.id);
+    (table.options.meta as any).onDelete();
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => push(`/dashboard/clusters/${row.original.id}`)}>View</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setShowDeleteModal(true)} className="text-destructive">
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DeleteClusterModal
+        isOpen={showDeleteModal}
+        clusterName={row.original.name}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+      />
+    </>
+  );
+};
+
 export const columns: ColumnDef<GetAllClustersResponse>[] = [
   {
     accessorKey: 'name',
     header: 'Cluster',
-    cell: ({ row }) => {
-      const { push } = useRouter();
-
-      return (
-        <div className='cursor-pointer underline'
-          onClick={() => {
-            push(`/dashboard/clusters/${row.original.id}`);
-          }}
-        >
-          {row.original.name}
-        </div>
-      );
-    },
+    cell: ({ row }) => <ClusterNameCell row={row} />,
   },
   {
     accessorKey: 'version',
@@ -90,47 +125,6 @@ export const columns: ColumnDef<GetAllClustersResponse>[] = [
   },
   {
     id: 'actions',
-    cell: (props: CellContext<GetAllClustersResponse, unknown>) => {
-      const [showDeleteModal, setShowDeleteModal] = useState(false);
-      const { push } = useRouter();
-
-      const handleDelete = async () => {
-        await deleteCluster(props.row.original.id);
-        (props.table.options.meta as any).onDelete();
-      };
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  push(`/dashboard/clusters/${props.row.original.id}`);
-                }}
-              >
-                View
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowDeleteModal(true)} className="text-destructive">
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DeleteClusterModal
-            isOpen={showDeleteModal}
-            clusterName={props.row.original.name}
-            onClose={() => setShowDeleteModal(false)}
-            onConfirm={handleDelete}
-          />
-        </>
-      );
-    },
+    cell: ({ row, table }) => <ActionsCell row={row} table={table} />,
   },
 ];

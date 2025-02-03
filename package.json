@@ -78,6 +78,7 @@
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
     "@nx/eslint": "20.3.3",
+    "@nx/eslint-plugin": "^20.4.0",
     "@nx/jest": "20.3.3",
     "@nx/js": "20.3.3",
     "@nx/nest": "20.3.3",

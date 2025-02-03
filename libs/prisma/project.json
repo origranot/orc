@@ -31,10 +31,21 @@
         "command": "npx prisma migrate dev --schema=libs/prisma/src/prisma/schema.prisma"
       }
     },
+    "migrate-prod": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy --schema=libs/prisma/src/prisma/schema.prisma"
+      }
+    },
     "studio": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx prisma studio --schema=libs/prisma/src/prisma/schema.prisma"
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
       }
     }
   }
