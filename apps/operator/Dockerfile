@@ -9,6 +9,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN pnpm install --frozen-lockfile
+
 # Build the application
 RUN npx nx build operator
 
