@@ -1,6 +1,11 @@
 # Use multi-stage builds to reduce the final image size
 FROM node:22-alpine3.20 AS builder
 
+# https://pnpm.io/docker
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
 WORKDIR /app
 
 COPY . .
@@ -26,4 +31,4 @@ COPY --from=builder /app/node_modules ./node_modules
 EXPOSE 3000
 
 # Start the application
-CMD sh -c "npx nx run prisma:migrate-prod && cd web && npm start"
+CMD sh -c "npx nx run prisma:migrate-prod && cd web && pnpm start"
