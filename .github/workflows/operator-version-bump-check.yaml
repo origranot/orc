@@ -32,7 +32,7 @@ jobs:
           # Try to get the version from the base branch
           git checkout origin/${{ github.base_ref }}
           if [ ! -f "k8s/charts/operator/Chart.yaml" ]; then
-            echo "Chart.yaml does not exist in base branch - this is a new chart"
+            echo "Chart.yaml does not exist in base branch, skipping version check"
             exit 0
           fi
 
