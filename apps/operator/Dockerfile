@@ -9,7 +9,6 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile
 
-# Build the application
 RUN npx nx build operator
 
 # Use a lighter image for the runtime
