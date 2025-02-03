@@ -10,12 +10,10 @@ global:
       repository: origranot/orc/web
       tag: latest
 
-# Shared annotations for deployments
 shared_annotations: &shared_annotations
   keel.sh/policy: force
   keel.sh/trigger: poll
 
-# Default resources
 default_resources: &default_resources
   requests:
     cpu: 100m
