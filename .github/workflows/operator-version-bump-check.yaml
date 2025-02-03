@@ -1,0 +1,47 @@
+name: Chart Version Check
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'k8s/charts/operator/**'
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if Chart.yaml was modified
+        id: check-changes
+        run: |
+          git diff --name-only origin/${{ github.base_ref }} HEAD | grep -q "k8s/charts/operator/" || echo "changed=false" >> $GITHUB_OUTPUT
+          echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Check version bump
+        if: steps.check-changes.outputs.changed == 'true'
+        run: |
+
+          # Install yq
+          wget https://github.com/mikefarah/yq/releases/download/v4.34.2/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+          # Get the version from the PR branch
+          NEW_VERSION=$(yq e '.version' k8s/charts/operator/Chart.yaml)
+          
+          # Get the version from the base branch
+          git checkout origin/${{ github.base_ref }}
+          OLD_VERSION=$(yq e '.version' k8s/charts/operator/Chart.yaml)
+          
+          if [ "$NEW_VERSION" = "$OLD_VERSION" ]; then
+            echo "Error: Chart version was not bumped. Please update the version in Chart.yaml"
+            exit 1
+          fi
+          
+          if ! printf '%s\n' "$OLD_VERSION" "$NEW_VERSION" | sort -V -C; then
+            echo "Error: New version ($NEW_VERSION) is not higher than the old version ($OLD_VERSION)"
+            exit 1
+          fi
