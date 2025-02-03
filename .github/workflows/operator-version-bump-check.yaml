@@ -15,25 +15,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if Chart.yaml was modified
-        id: check-changes
+      - name: Install yq
         run: |
-          git diff --name-only origin/${{ github.base_ref }} HEAD | grep -q "k8s/charts/operator/" || echo "changed=false" >> $GITHUB_OUTPUT
-          echo "changed=true" >> $GITHUB_OUTPUT
-
-      - name: Check version bump
-        if: steps.check-changes.outputs.changed == 'true'
-        run: |
-
-          # Install yq
           wget https://github.com/mikefarah/yq/releases/download/v4.34.2/yq_linux_amd64 -O /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
 
+      - name: Check version bump
+        run: |
           # Get the version from the PR branch
+          if [ ! -f "k8s/charts/operator/Chart.yaml" ]; then
+            echo "Chart.yaml does not exist in PR branch"
+            exit 0
+          fi
           NEW_VERSION=$(yq e '.version' k8s/charts/operator/Chart.yaml)
 
-          # Get the version from the base branch
+          # Try to get the version from the base branch
           git checkout origin/${{ github.base_ref }}
+          if [ ! -f "k8s/charts/operator/Chart.yaml" ]; then
+            echo "Chart.yaml does not exist in base branch - this is a new chart"
+            exit 0
+          fi
+
           OLD_VERSION=$(yq e '.version' k8s/charts/operator/Chart.yaml)
 
           if [ "$NEW_VERSION" = "$OLD_VERSION" ]; then
