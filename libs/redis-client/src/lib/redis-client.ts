@@ -3,8 +3,6 @@ import Redis from 'ioredis';
 class RedisSingleton {
   private static instance: Redis;
 
-  private constructor() {}
-
   static getInstance(): Redis {
     if (!RedisSingleton.instance) {
       RedisSingleton.instance = new Redis({

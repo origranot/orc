@@ -7,12 +7,21 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/libs/redis-client",
         "main": "libs/redis-client/src/index.ts",
         "tsConfig": "libs/redis-client/tsconfig.lib.json",
-        "assets": ["libs/redis-client/*.md"]
+        "assets": [
+          "libs/redis-client/*.md"
+        ]
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
       }
     }
   }
