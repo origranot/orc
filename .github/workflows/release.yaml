@@ -7,7 +7,7 @@ concurrency:
 on:
   push:
     branches:
-      - master
+      - feat/deployment
 
 jobs:
   identify-changed-projects:
