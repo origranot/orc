@@ -31,7 +31,7 @@
     "**/*.js",
     "**/*.jsx",
     "../../apps/web/.next/types/**/*.ts",
-    "../../libs/utils",
+    "../../libs/*",
     "../../dist/apps/web/.next/types/**/*.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts"

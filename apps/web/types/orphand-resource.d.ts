@@ -2,6 +2,10 @@ type ServiceSpec = {
     type: string;
 }
 
+type PVSpec = {
+    capacity: { storage: string };
+}
+
 type OrphanedResource<T> = {
     kind: string;
     name: string;

@@ -69,17 +69,14 @@ export const columns: ColumnDef<OrphanedResource>[] = [
     accessorKey: 'cost',
     header: ({ column }) => <SortButton column={column}>Cost</SortButton>,
     cell: ({ row }) => {
-      const cost = row.original.cost;
-      const { bgColor, textColor } = getCostStyle(cost);
-  
+      const cost = row.original.cost || 0; // Default to 0 if cost is null
+      const variant = cost != null ? (cost > 20 ? 'destructive' : cost > 0 ? 'warning' : 'success') : 'secondary';
+
       return (
         <div className="flex items-center justify-center">
-          <div
-            className={`rounded-lg flex items-center justify-center h-8 w-20 ${bgColor} ${textColor}`}
-            title={cost != null ? `$${cost}` : 'N/A'}
-          >
-            {cost != null ? `$${cost}` : 'N/A'}
-          </div>
+          <Badge variant={variant} className="text-xs px-2 py-0.5">
+            {cost != null ? `${cost}$` : 'N/A'}
+          </Badge>
         </div>
       );
     },

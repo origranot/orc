@@ -13,6 +13,31 @@ interface BarChartProps {
   }>;
   yAxisWidth?: number;
 }
+const CustomBar = (props: any) => {
+  const { x, y, width, height, stroke } = props;
+  const patternId = `striped-${x}-${y}`; // unique ID for each bar
+
+  return (
+    <g>
+      <defs>
+        <pattern id={patternId} width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="10" stroke={stroke} strokeWidth="1" strokeOpacity="0.5" />
+        </pattern>
+      </defs>
+
+      {/* Background rectangle with pattern */}
+      <rect x={x} y={y} width={width} height={height} fill={`url(#${patternId})`} />
+
+      {/* Border lines */}
+      <path
+        d={`M${x},${y} L${x + width},${y} L${x + width},${y + height} M${x},${y} L${x},${y + height}`}
+        stroke={stroke}
+        fill="none"
+        strokeWidth={1}
+      />
+    </g>
+  );
+};
 
 export function BarChart({ data, index, categories, yAxisWidth = 50 }: BarChartProps) {
   const { theme } = useTheme();
@@ -79,19 +104,18 @@ export function BarChart({ data, index, categories, yAxisWidth = 50 }: BarChartP
             key={category.key}
             dataKey={category.key}
             name={category.label}
-            fill={chartConfig.color}
-            radius={[4, 4, 0, 0]}
+            shape={<CustomBar />}
+            stroke={chartConfig.color}
             activeBar={(props: any) => {
-              const { x, y, width, height, fill } = props;
+              const { x, y, width, height } = props;
               return (
-                <Rectangle
-                  {...props}
-                  fill={fill}
-                  fillOpacity={0.8}
-                  stroke={fill}
+                <path
+                  d={`M${x},${y} L${x + width},${y} L${x + width},${y + height} M${x},${y} L${x},${y + height}`}
+                  stroke={chartConfig.color}
                   strokeDasharray="4"
                   strokeDashoffset="2"
-                  strokeWidth={2}
+                  strokeWidth={1}
+                  fill="none"
                 />
               );
             }}

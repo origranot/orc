@@ -50,6 +50,7 @@ export async function POST(request: Request) {
         version: clusterInfo.version,
         nodes: clusterInfo.nodes,
         registrationId: parsedPayload.data.registrationId,
+        lastSeen: new Date(),
       },
     });
 

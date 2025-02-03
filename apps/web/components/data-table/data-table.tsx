@@ -17,11 +17,13 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@orc/web/ui/custom-ui';
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
+import * as Dialog from '@radix-ui/react-dialog'; // Import Radix Dialog
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
   searchPlaceholder?: string;
   queryKey: string;
+  tableTitle?: string;
   queryFn: (params: { page: number; limit: number; search?: string; sort: {[field: string]: string} }) => Promise<{
     data: TData[];
     pagination: {
@@ -47,6 +49,7 @@ interface DataTableProps<TData> {
     onClick: () => void;
   }[];
   showViewOptions?: boolean;
+  onRowClick?: (row: any) => any
 }
 
 export function DataTable<TData>({
@@ -57,6 +60,8 @@ export function DataTable<TData>({
   initialData,
   toolbarActions = [],
   showViewOptions = true,
+  tableTitle,
+  onRowClick
 }: DataTableProps<TData>) {
   const queryClient = useQueryClient();
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -113,6 +118,8 @@ export function DataTable<TData>({
   });
 
   return (
+    <div>
+    { tableTitle &&<h2 className="p-3 text-lg font-semibold">{tableTitle} ({data?.pagination.total})</h2>}
     <div className="space-y-4 overflow-hidden bg-card text-card-foreground shadow-sm p-4 border rounded-lg w-full sm:max-w-full">
       <DataTableToolbar
         table={table}
@@ -137,7 +144,7 @@ export function DataTable<TData>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} onClick={() => onRowClick && onRowClick(row)} className={onRowClick ? "cursor-pointer" : ""}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
@@ -154,6 +161,7 @@ export function DataTable<TData>({
         </Table>
       </div>
       <DataTablePagination table={table} totalItems={data?.pagination?.total ?? 0} />
+    </div>
     </div>
   );
 }

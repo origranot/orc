@@ -21,6 +21,7 @@
       "@orc/redis": ["libs/redis-client/src/index.ts"],
       "@orc/tokens": ["libs/tokens/src/index.ts"],
       "@orc/utils": ["libs/utils/src/index.ts"],
+      "@orc/costs": ["libs/cost-calculator/src/lib/cost-calculator.ts"],
       "@orc/web/*": ["apps/web/*"],
       "cost-calculator": ["libs/cost-calculator/src/index.ts"]
     }

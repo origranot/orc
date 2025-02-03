@@ -1,3 +1,5 @@
-export const getNodeCost = (node: OrphanedResource<null>): number => {
-    return 80;
+import {getAwsNodePrice} from 'cost-calculator';
+
+export const getNodeCost = (node: OrphanedResource<null>): Promise<number | undefined> => {
+    return getAwsNodePrice();
 }

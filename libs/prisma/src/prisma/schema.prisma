@@ -66,7 +66,7 @@ model Cluster {
     score          Int?
     lastSeen       DateTime?
     userId         String
-    status         ClusterStatus @default(PENDING)
+    status         ClusterStatus @default(ACTIVE)
     user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
     snapshots      Snapshot[]
     createdAt      DateTime      @default(now())
@@ -103,7 +103,8 @@ model OrphanedResource {
     deletedAt    DateTime?
     owner        String?
     reason       String?
-    cost         Int?
+    cost         Float?
+    spec         String?
     status       OrphanedResourceStatus @default(PENDING)
 
     @@unique([snapshotId, uid])
