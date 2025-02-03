@@ -1,0 +1,14 @@
+{{ include "global-templates.deployment" (dict "deployments" .Values.deployments "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.service" (dict "services" .Values.services "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.configmap" (dict "configmaps" .Values.configmaps "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.ingress" (dict "ingresses" .Values.ingresses "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.namespace" (dict "namespaces" .Values.namespaces "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.statefulset" (dict "statefulsets" .Values.statefulsets "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.secret" (dict "secrets" .Values.secrets "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.externalsecret" (dict "externalsecrets" .Values.externalsecrets "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.clustersecretstore" (dict "clustersecretstores" .Values.clustersecretstores "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.role" (dict "roles" .Values.roles "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.rolebinding" (dict "rolebindings" .Values.rolebindings "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.role" (dict "roles" .Values.roles "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.serviceaccount" (dict "serviceaccounts" .Values.serviceaccounts "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}
+{{ include "global-templates.sealedsecret" (dict "sealedsecrets" .Values.sealedsecrets "Chart" .Chart "Release" .Release "Capabilities" .Capabilities "Files" .Files "Template" .Template "Values" .Values) }}

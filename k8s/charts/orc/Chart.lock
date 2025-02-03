@@ -1,0 +1,6 @@
+dependencies:
+- name: global-templates
+  repository: https://xmcyber.github.io/helm-global-templates/
+  version: 1.3.2
+digest: sha256:1c1b013a08b81cd3e138f1bcedf3054642c305bda81039ad9a4d76d1a535d3f1
+generated: "2025-02-03T22:57:49.355526+02:00"

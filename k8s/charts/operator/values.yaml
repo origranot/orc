@@ -1,0 +1,41 @@
+namespace: &namespace orc
+
+global:
+  # Global registry for the images
+  registry: ghcr.io
+
+  # Images dictionary, this is used to define the images that will be used in the deployments
+  images:
+    operator:
+      repository: origranot/orc/operator
+      tag: 86f19c1
+
+# Default resources
+default_resources: &default_resources
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+secrets:
+  orc-secrets:
+    name: orc-secrets
+    namespace: *namespace
+    data:
+      ORC_CONSOLE_URL: https://getorc.com
+      ORC_REGISTRATION_TOKEN: None
+
+deployments:
+  operator:
+    name: orc-agent
+    namespace: *namespace
+    replicas: 1
+    containers:
+      - name: operator
+        imageKey: operator
+        imagePullPolicy: Always
+        resources: *default_resources
+        envFrom:
+          - secretRef:
+              name: orc-secrets
+        ports:
+          - containerPort: 5000
