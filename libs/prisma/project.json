@@ -7,16 +7,12 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/prisma",
         "main": "libs/prisma/src/index.ts",
         "tsConfig": "libs/prisma/tsconfig.lib.json",
-        "assets": [
-          "libs/prisma/*.md"
-        ]
+        "assets": ["libs/prisma/*.md"]
       }
     },
     "generate": {
