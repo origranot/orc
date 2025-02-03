@@ -10,6 +10,8 @@ export class KubeService {
   private _policyApi: k8s.PolicyV1Api;
   private _storageApi: k8s.StorageV1Api;
   private _versionApi: k8s.VersionApi;
+  private _rbacApi: k8s.RbacAuthorizationV1Api;
+
 
   private logger = new Logger(KubeService.name);
 
@@ -23,6 +25,8 @@ export class KubeService {
     this._policyApi = this.kc.makeApiClient(k8s.PolicyV1Api);
     this._storageApi = this.kc.makeApiClient(k8s.StorageV1Api);
     this._versionApi = this.kc.makeApiClient(k8s.VersionApi);
+    this._rbacApi = this.kc.makeApiClient(k8s.RbacAuthorizationV1Api);
+
   }
 
   get client() {
@@ -47,6 +51,10 @@ export class KubeService {
 
   get storageApi() {
     return this._storageApi;
+  }
+
+  get rbacApi() {
+    return this._rbacApi;
   }
 
   async getClusterVersion(): Promise<string> {
