@@ -84,7 +84,7 @@ model Snapshot {
     createdAt         DateTime           @default(now())
     createdBy         String?
     clusterId         String
-    cluster           Cluster            @relation(fields: [clusterId], references: [id])
+    cluster           Cluster            @relation(fields: [clusterId], references: [id], onDelete: Cascade)
 
     @@index([clusterId])
     @@index([createdAt])
