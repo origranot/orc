@@ -7,7 +7,7 @@ global:
   # Images dictionary, this is used to define the images that will be used in the deployments
   images:
     web:
-      repository: origranot/orc/operator
+      repository: origranot/orc/web
       tag: latest
 
 # Shared annotations for deployments

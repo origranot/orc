@@ -6,13 +6,12 @@ export const OrcConfigSchema = z.object({
   ageThresholdDays: z.number().int().positive(),
   batchSize: z.number().int().positive(),
   ignoreAnnotations: z.array(z.string()),
-  schedule: z.string(),
   consoleUrl: z.string().url(),
   clusterToken: z.string().optional(),
   registrationToken: z.string(),
   namespace: z.string(),
   operatorName: z.string(),
-  scanFrequency : z.string()
+  scanFrequency: z.string(),
 });
 
 export type OrcConfigType = z.infer<typeof OrcConfigSchema>;
@@ -23,13 +22,11 @@ export class OrcConfig implements OrcConfigType {
   ageThresholdDays: number;
   batchSize: number;
   ignoreAnnotations: string[];
-  schedule: string;
   consoleUrl: string;
   registrationToken: string;
   namespace: string;
   operatorName: string;
   scanFrequency: string;
-
 
   constructor(overrideConfig: Partial<OrcConfigType>) {
     const config = {
@@ -37,11 +34,10 @@ export class OrcConfig implements OrcConfigType {
       ageThresholdDays: parseInt(process.env.ORC_AGE_THRESHOLD_DAYS || '7'),
       batchSize: parseInt(process.env.ORC_BATCH_SIZE || '10'),
       ignoreAnnotations: process.env.ORC_IGNORE_ANNOTATIONS?.split(',') || ['orc/ignore-resource'],
-      schedule: process.env.ORC_SCHEDULE || '0 0 * * *',
       consoleUrl: process.env.ORC_CONSOLE_URL,
       registrationToken: process.env.ORC_REGISTRATION_TOKEN,
       namespace: process.env.NAMESPACE || 'orc',
-      operatorName: process.env.OPERATOR_NAME || 'orc-reporter',
+      operatorName: process.env.OPERATOR_NAME || 'orc-agent',
       scanFrequency: process.env.SCAN_FREQUENCY || '*/30 * * * *',
     };
 

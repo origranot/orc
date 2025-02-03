@@ -123,9 +123,8 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}/${{ matrix.project }}
           tags: |
-            type=sha,prefix=
-            type=ref,event=branch
-            type=raw,value=latest,enable={{is_default_branch}}
+            latest
+            ${{ github.sha }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
