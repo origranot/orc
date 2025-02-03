@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.rbac.clusterRole.name | default "orc-operator-role" }}
+rules:
+{{- with .Values.rbac.clusterRole.rules -}}
+{{ toYaml . | nindent 2 }}
+{{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.rbac.clusterRoleBinding.name | default "orc-operator-binding" }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.serviceaccounts.name | default "orc-operator" }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Values.rbac.clusterRole.name | default "orc-operator-role" }}
+  apiGroup: rbac.authorization.k8s.io

@@ -97,9 +97,16 @@ export function ClusterConnectModal({ isOpen, onClose, onConnect }: ClusterConne
     setError('');
     setIsGeneratingToken(false);
   };
-
   const installationCommand = registrationToken
-    ? `helm install orc ./chart --set secrets.orc-secrets.data.ORC_REGISTRATION_TOKEN=${registrationToken} -n orc --create-namespace`
+    ? `# Add the Helm repository
+helm repo add orc https://origranot.github.io/orc
+helm repo update
+
+# Install the operator
+helm install my-operator orc/operator \\
+--namespace orc \\
+--create-namespace \\
+--set configmaps.orc-cm.data.ORC_REGISTRATION_TOKEN="${registrationToken}"`
     : '';
 
   return (
