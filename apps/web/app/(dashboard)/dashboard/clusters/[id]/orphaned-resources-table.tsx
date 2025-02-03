@@ -48,6 +48,7 @@ export function OrphanedResourcesTable({ clusterId, initialData, isLoading, fetc
     <div>
     <DataTable<OrphanedResource>
       columns={columns}
+      tableTitle="Orphaned Resources"
       queryKey={`orphanedResources-${clusterId}`}
       queryFn={fetchResources}
       initialData={initialData}

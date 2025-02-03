@@ -23,6 +23,7 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
   searchPlaceholder?: string;
   queryKey: string;
+  tableTitle?: string;
   queryFn: (params: { page: number; limit: number; search?: string; sort: {[field: string]: string} }) => Promise<{
     data: TData[];
     pagination: {
@@ -59,6 +60,7 @@ export function DataTable<TData>({
   initialData,
   toolbarActions = [],
   showViewOptions = true,
+  tableTitle,
   onRowClick
 }: DataTableProps<TData>) {
   const queryClient = useQueryClient();
@@ -116,6 +118,8 @@ export function DataTable<TData>({
   });
 
   return (
+    <div>
+    { tableTitle &&<h2 className="p-3 text-lg font-semibold">{tableTitle} ({data?.pagination.total})</h2>}
     <div className="space-y-4 overflow-hidden bg-card text-card-foreground shadow-sm p-4 border rounded-lg w-full sm:max-w-full">
       <DataTableToolbar
         table={table}
@@ -157,6 +161,7 @@ export function DataTable<TData>({
         </Table>
       </div>
       <DataTablePagination table={table} totalItems={data?.pagination?.total ?? 0} />
+    </div>
     </div>
   );
 }

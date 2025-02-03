@@ -62,7 +62,6 @@ export default function ClusterDetailsPage() {
         <ClusterDetailsCard cluster={basicInfo?.success ? (basicInfo.cluster as Cluster) : undefined} isLoading={isLoadingBasicInfo} />
         <OrphanedResourcesChart data={timeseriesData?.data || []} isLoading={isLoadingTimeseriesData} onTimeRangeChange={handleTimeRangeChange} />
         <div className="space-y-4 overflow-hidden">
-          <h2 className="text-lg font-semibold">Orphaned Resources</h2>
           <OrphanedResourcesTable
             clusterId={clusterId}
             initialData={initialResourcesData}
