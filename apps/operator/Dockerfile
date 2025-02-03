@@ -1,17 +1,13 @@
 # Use multi-stage builds to reduce the final image size
 FROM node:22-alpine3.20 AS builder
 
-# https://pnpm.io/docker
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# Install pnpm directly instead of using corepack
+RUN wget -qO /bin/pnpm "https://github.com/pnpm/pnpm/releases/download/v10.2.0/pnpm-linux-x64" && \
+    chmod +x /bin/pnpm
 
 WORKDIR /app
 
 COPY . .
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
 
 # Build the application
 RUN npx nx build operator
