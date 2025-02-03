@@ -98,7 +98,9 @@ export function ClusterConnectModal({ isOpen, onClose, onConnect }: ClusterConne
     setIsGeneratingToken(false);
   };
 
-  const installationCommand = registrationToken ? `helm install orc ./chart --set secrets.orc-secrets.data.ORC_REGISTRATION_TOKEN=${registrationToken} -n orc --create-namespace` : '';
+  const installationCommand = registrationToken
+    ? `helm install orc ./chart --set secrets.orc-secrets.data.ORC_REGISTRATION_TOKEN=${registrationToken} -n orc --create-namespace`
+    : '';
 
   return (
     <Dialog
