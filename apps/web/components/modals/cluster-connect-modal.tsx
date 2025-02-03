@@ -103,7 +103,7 @@ helm repo add orc https://origranot.github.io/orc
 helm repo update
 
 # Install the operator
-helm install my-operator orc/operator \\
+helm install orc orc/operator \\
 --namespace orc \\
 --create-namespace \\
 --set configmaps.orc-cm.data.ORC_REGISTRATION_TOKEN="${registrationToken}"`
