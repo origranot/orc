@@ -5,7 +5,13 @@ import { NamespaceScanner, ServiceScanner, IngressScanner, PdbScanner, StorageCl
 import { SCANNERS_TOKEN } from './scanners.token';
 
 const SCANNERS = [
-  NodeScanner,
+  NamespaceScanner,
+  ServiceScanner,
+  IngressScanner,
+  PdbScanner,
+  StorageClassScanner,
+  PersistentVolumeScanner,
+  NodeScanner
 ];
 
 @Module({
