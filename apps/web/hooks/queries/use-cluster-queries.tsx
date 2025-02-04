@@ -15,14 +15,22 @@ interface UseClusterQueriesProps {
 }
 
 export function useClusterQueries({ clusterId, timeRange }: UseClusterQueriesProps) {
-  const queryClient = useQueryClient();
-
   const { data: basicInfo, isLoading: isLoadingBasicInfo } = useQuery({
     queryKey: [QUERY_KEYS.CLUSTER, clusterId],
     queryFn: () => getClusterBasicInfo(clusterId),
   });
 
-  const fetchOrphanedResources = async ({ page, limit, search, sort }: { page: number; limit: number; search?: string; sort?: {[field: string]: string} }) => {
+  const fetchOrphanedResources = async ({
+    page,
+    limit,
+    search,
+    sort,
+  }: {
+    page: number;
+    limit: number;
+    search?: string;
+    sort?: { [field: string]: string };
+  }) => {
     const response = await getOrphanedResources({
       clusterId,
       page,

@@ -46,21 +46,23 @@ export default function ClusterDetailsPage() {
     );
   }
 
-  const clusterName = basicInfo?.success ? basicInfo.cluster?.name : 'Cluster';
-
   return (
     <>
       <BreadcrumbItems
         items={[
           { name: 'Dashboard', link: '/dashboard' },
           { name: 'Clusters', link: '/dashboard/clusters' },
-          { name: clusterName || 'Cluster' },
+          { name: basicInfo?.cluster?.name },
         ]}
       />
       <DashboardShell className="space-y-6">
-        <DashboardHeader heading={clusterName} text="Here you can see a detailed view of your cluster and its resources." />
+        <DashboardHeader heading={basicInfo?.cluster!.name} text="Here you can see a detailed view of your cluster and its resources." />
         <ClusterDetailsCard cluster={basicInfo?.success ? (basicInfo.cluster as Cluster) : undefined} isLoading={isLoadingBasicInfo} />
-        <OrphanedResourcesChart data={timeseriesData?.data || []} isLoading={isLoadingTimeseriesData} onTimeRangeChange={handleTimeRangeChange} />
+        <OrphanedResourcesChart
+          data={timeseriesData?.data || []}
+          isLoading={isLoadingTimeseriesData}
+          onTimeRangeChange={handleTimeRangeChange}
+        />
         <div className="space-y-4 overflow-hidden">
           <OrphanedResourcesTable
             clusterId={clusterId}
