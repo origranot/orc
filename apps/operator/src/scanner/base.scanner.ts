@@ -15,7 +15,7 @@ export abstract class BaseResourceScanner<T extends K8sResource> {
 
   abstract scan(): Promise<T[]>;
   abstract isOrphaned(resource: T): Promise<{ isOrphaned: boolean; reason?: string }>;
-  abstract cleanup(resource: T): Promise<CleanupResult<T>>;
+  cleanup?(resource: T): Promise<CleanupResult<T>>;
 
   shouldProcess(resource: T): boolean {
     const annotations = resource.metadata?.annotations || {};
