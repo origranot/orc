@@ -4,6 +4,29 @@
   "sourceRoot": "apps/web",
   "projectType": "application",
   "tags": [],
-  "// targets": "to see all targets run: nx show project web --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "dependsOn": [
+        {
+          "target": "generate",
+          "projects": "prisma"
+        }
+      ],
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/web"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "apps/web"
+        },
+        "production": {
+          "buildLibsFromSource": true,
+          "includeDevDependenciesInPackageJson": false
+        }
+      }
+    }
+  }
 }

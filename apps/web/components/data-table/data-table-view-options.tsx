@@ -1,7 +1,7 @@
 'use client';
 
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
-import type { Table } from '@tanstack/react-table';
+import type { RowData, Table } from '@tanstack/react-table';
 import { SlidersHorizontal } from 'lucide-react';
 
 import { Button } from '@orc/web/ui/custom-ui';
@@ -18,7 +18,7 @@ interface DataTableViewOptionsProps<TData> {
 }
 
 declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends unknown, TValue> {
+  interface ColumnMeta<TData extends RowData, TValue> {
     title: string;
   }
 }

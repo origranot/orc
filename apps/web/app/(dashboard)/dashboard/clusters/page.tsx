@@ -27,11 +27,10 @@ interface ClusterQueryResult {
   };
 }
 
-export const GET_ALL_CLUSTERS_QUERY_KEY = 'clusters';
-
 export default function ClustersPage() {
   const queryClient = useQueryClient();
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const GET_ALL_CLUSTERS_QUERY_KEY = 'clusters';
 
   const { data: initialData } = useQuery<ClusterQueryResult>({
     queryKey: [GET_ALL_CLUSTERS_QUERY_KEY, 'initial'],

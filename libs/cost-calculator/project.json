@@ -15,6 +15,11 @@
         "main": "libs/cost-calculator/src/index.ts",
         "assets": ["libs/cost-calculator/*.md"]
       }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
+      }
     }
   }
 }

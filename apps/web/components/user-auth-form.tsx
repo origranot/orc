@@ -7,7 +7,7 @@ import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 import { signIn } from 'next-auth/react';
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isGoogleLoading, setIsGoogleLoading] = React.useState<boolean>(false);

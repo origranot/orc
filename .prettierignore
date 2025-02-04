@@ -3,3 +3,6 @@
 /coverage
 /.nx/cache
 /.nx/workspace-data
+pnpm-lock.yaml
+/k8s/**/*.yaml
+/apps/web/.next

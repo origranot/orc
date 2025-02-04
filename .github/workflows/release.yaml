@@ -1,0 +1,136 @@
+name: Release
+
+concurrency:
+  group: release-${{ github.ref_name }}-${{ github.event_name }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  identify-changed-projects:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      actions: 'read'
+      packages: 'write'
+    outputs:
+      matrix: ${{ steps.prepare.outputs.matrix }}
+      length: ${{ steps.prepare.outputs.length }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/pnpm-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: 'master'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Identify and filter changed projects
+        id: prepare
+        shell: bash
+        run: |
+          projects=$(npx nx show projects --affected --base=HEAD~1)
+          echo "Changed projects: $projects"
+          whitelisted_projects=("web operator")
+          filtered_projects=()
+          for project in $projects; do
+            if [[ " ${whitelisted_projects[@]} " =~ " ${project} " ]]; then
+              filtered_projects+=("$project")
+            fi
+          done
+          echo "Filtered projects: ${filtered_projects[@]}"
+          if [ ${#filtered_projects[@]} -eq 0 ]; then
+            matrix='[]'
+          else
+            matrix=$(printf "[%s]" "$(printf "\"%s\"," "${filtered_projects[@]}" | sed 's/,$//')")
+          fi
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+          echo "length=${#filtered_projects[@]}" >> $GITHUB_OUTPUT
+
+  build-and-push:
+    needs: identify-changed-projects
+    runs-on: ubuntu-latest
+    if: ${{ needs.identify-changed-projects.outputs.length > 0 }}
+    permissions:
+      contents: 'read'
+      packages: 'write'
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.identify-changed-projects.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Restore node_modules from cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/pnpm-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/${{ matrix.project }}
+          tags: |
+            latest
+            ${{ github.sha }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/${{ matrix.project }}/Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true

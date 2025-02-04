@@ -1,0 +1,139 @@
+namespace: &namespace orc
+
+global:
+  # Global registry for the images
+  registry: ghcr.io
+
+  # Images dictionary, this is used to define the images that will be used in the deployments
+  images:
+    web:
+      repository: origranot/orc/web
+      tag: latest
+
+shared_annotations: &shared_annotations
+  keel.sh/policy: force
+  keel.sh/trigger: poll
+
+default_resources: &default_resources
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+shared_env_from: &shared_env_from
+  - configMapRef:
+      name: orc-config
+  - secretRef:
+      name: orc-sealed-secret
+  - secretRef:
+      name: redis-sealed-secrets
+
+deployments:
+  web:
+    name: web
+    namespace: *namespace
+    replicas: 1
+    annotations: *shared_annotations
+    containers:
+      - name: web
+        imageKey: web
+        imagePullPolicy: Always
+        envFrom: *shared_env_from
+        resources: *default_resources
+        ports:
+          - containerPort: 3000
+  redis:
+    name: redis
+    namespace: *namespace
+    replicas: 1
+    containers:
+      - name: redis
+        imagePullPolicy: Always
+        image:
+          registry: docker.io
+          repository: redis
+          tag: 7.4-alpine
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        envFrom:
+          - secretRef:
+              name: redis-sealed-secrets
+        command: ['sh', '-c', 'redis-server --requirepass $REDIS_PASSWORD']
+        ports:
+          - containerPort: 6379
+
+services:
+  web:
+    name: web
+    namespace: *namespace
+    ports:
+      - name: http
+        port: 3000
+        targetPort: 3000
+    selector:
+      app: web
+  redis:
+    name: redis
+    namespace: *namespace
+    ports:
+      - name: redis
+        port: 6379
+        targetPort: 6379
+    selector:
+      app: redis
+
+ingresses:
+  web:
+    name: web
+    namespace: *namespace
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
+      kubernetes.io/ingress.class: 'nginx'
+    ingressClassName: nginx
+    tls:
+      - hosts:
+          - getorc.com
+        secretName: web-tls
+    rules:
+      - host: getorc.com
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: web
+                  port:
+                    number: 3000
+
+sealedsecrets:
+  - name: orc-sealed-secret
+    namespace: *namespace
+    annotations:
+      sealedsecrets.bitnami.com/cluster-wide: 'true'
+    encryptedData:
+      DATABASE_URL: 'AgAPA5iabHWu6PM/DldOna05eBJtvdpiH68J1/oUBF7Tk7ei4n7iTELiOEFZOfmMonKzGlb20/TZzvVC4xrqr9KckyusDIHHH2ioDAOZLU/Zf4plweKneH7EeeBVSdjffkwGK0hbF+yvraSTp1U6dopY29N4VnCEJnO4H/ebD3YfboLNCd0p97/qrCzXXyYMKWu6xIeODh+hzICYZGwlV0cfSRY6jHWAp27c6H8rfF8RTqDLRKc7Px7Toik9aa1PHt1lWDRvOrsKCek29IHHdvHI343gfhrqwni8rMkML5xKi0lo7r0gi1ojkfcN6HRM0eJsOh3FV4wWRVRZtFW4FCaKaA4nrrBrI6xD7z2hH7/40HxiB5xKnMgnV2V+DCkzl+1CViEQPueTuD8WgEmk1GPKFieNBWJqHVg6b2R4ZicevNTAjavIGVlB1SvD/9EbKcCujg55dZn/HRuJGBsu0S1wSGKS3gXnIjRDAh0itpcJgKVQs1lGZaMAoJ+BUO1kK9ymvYRi5OD8QnSxeqF/Ue7fb8fZUsDX6l1VkTxE3RaUQWYOTSrPqXH+UkAUVhgs2ZitST8ZjseKO0oSGlWZ0lTXM1o0bGvyOxFBaIHiEt6C5+adsXeU1pBgKi+3bOJN7pLABO4DBslPdl0MUYCAVcn9sJpNEJiL29PXGmShkI4lsOGlvF2AO8FBPx6Bb4jfDiIpkUhGGXPHrFW3giqXjJt7qIXNsKVA1xnGBwHHD6438tbW/JfEkiQV8sKiJ+KH3S5yHFRLZgqAhA1Ny/pE/LvCalmBsnhqxgyPI53CbohiRvSsxvQRLnaUUo4r2V/bhfUyv3v3GKzLxTpeQhjY2IsgXLs54CiFdfSu'
+      GOOGLE_CLIENT_ID: 'AgDCkUITEVkgV0TMWPPX3Vl90DeYgmzsjOcYImD5GayYFeH5DAHlqN0vmyYKx+POGYBZWG/4UxiG/12bpGZh5B9KH1VSiY3SltNh/5u1n85s133JLWvQDhjHZO0+kN1eA0aOdU7bFR33Yf4lbPunWd84z2Y/FTUIyOD48hyHpXxqzDBtC7cU1p2u+2kFeJA7iWQmz1UA/QPgurcxfRqWQiZKog9HU09SYADZm+KQeoZYXm4Vxxz9yIbZkZxzfkiYo4/F9EYXx0g/CSatsIxL+Occ6x8M1DwDkCrC8aiHdCEGW9KIBuzdMULJ5iv51Gv5UaJOZYnqMxTofVVlWHfsYVWceaFuneFuH9gW6ILTHDQqhu1bvyecOfTjpqm2eZqCcBcvymVMzXaBAGxvU1B2ShkV6oTeU/gQWOE5f9FA3o+9JYgc0yoY815dy9O3IbL1HWSt/6BzXCNnd7D/+qg+FhcdTgQBQGRjdVaXETDcnTCcQ612VFhrUo5MW7IhnMmF82QTMXWpcpm9RpN5XXFoYGppEDlsrqvr82iPmlahz9Au/xu8ZXjU/05FALU3bOMaEwiApvd0w7js9O2JrviybmAjIP6RNYb6GYx66kdPDJ9hJUxdzZodFNaF+YVYvRHuO1tHQSqxHokZjQupCxLHu7ZCuv0+a7ZqayCUIuKxSNU8LoamR6R3U2FkkKrq9eXx2w3KYMe2f5ScrmWeulFXlrCA+gBFzLYrbbKU03ZDQfXWV35H25x4CPxFDvbMbWdCObLuDUHL+KWKGoEdGVDOxCRy25XZnexMYg=='
+      GOOGLE_CLIENT_SECRET: 'AgCyYSHl9iY34SfGvvcctrzUinLxNdWjuML9kTNwnmDZLoJQkG8XS6yefhFpi+Emn7tOARbN5ysFHuPTxRJHWsy1uZJltIcahWl7cFCsL4Tnfn1rNOXJk/KQs/6ZrqM8R4T6uH/CeFsHsFcgKreBVcMG6jp6g+cFjrAF+D0E5yhqu1qcSYOq0lgopc25n6xlijJ8VVI58SZhrK0vb1UkEPIiONF1WiMljutamqqKxi+bWq6GqMx8aTMROCGL/AJLhdbNQj9PvQ3c+sTS8BlyqEtxN0/Vv/Kk4/tthAntAMwHUoVE4TP3mOKmcVu+gAkUIPuxXBKYmMuxioaahpaL7bZfloLIOYaxfWBWol2oxcg7vg6JoMwlpZWQfDzBOhWupYa2QhJdrWeCjPqgXSE/AKLGYSlKagWTI9+Tx8K0jk/NDfHIeZVM90YraelMqq4U5a9R8N3aPH6GzsRsyoUWEW+YrXl1A/IlICiDDQPeyXXe+oZmUBTuRKYQaXh7jtO/hA+7yuPErafXKwY+cTDnW3PWWxwZDncqPN+19zlr6i6dir8Flf5mU2wqAw4Qi+vUchWM2ew2DdH53zpife2JNvibhzvTPZ607/dgDpalD6vU/Ogwvkw5TcdZ154E6iWp2hak0DljVVmgh/kbVBZw0brZHdlBOFgznzbgGF5d2eWEBaOAUGYhCmz+P9ClBBuuFF3uT6ileRNhg/8XLnVy9u0DPFawk8tsSnBYWRgcSaDIqzZnig=='
+      NEXTAUTH_SECRET: 'AgAwJ+fcouIwLULEe5Vbty8mz48yXVT106dRFSV28VNtCoRtygPb36ojuR4LlvgJWaHwsLbNTot2GCepTiF5mDxq+jOAmd/ZFgbpRLWSv5PPbAEb1USiCkATEaP7VYRvuBpdGZJif2/rzkrl2qOCFlS0jasZdNGWjSoJARqHKGIBDdPcImt8A9sB5F1kDhkYNxpiERtF1wRSWiMLjc0CuQudjbIJt9UxpW7lXRHtMT+/VV7y1cHfomnvYgmSxHpMFmztJdPzcUeLvUUuxWefUo45+CnpF+O0cBocwxh3OxqYLl9cCSrCxkVwmFIKdUQaeZasBB6FHb3m6J+IU8QQ4RHALKFMIGvclSq/CiytRI4BHE1v7ESPV0pD45As0YLxe7li0fwBCs7cn4+6VRD3QWCqJjkukAZOUUFCFow7jUwGJwv2TSnwQ8HfJLZdKH4cAtLy3Zd81B+giZ+srZrUPrHjYA+lrXauucgj3wVLkdBF+hAtbVG8DnivObOVs9Nb0jxITonXHYtj1UBwFEwdtZARFvtjqAalkjywGb24r5YJd5JvLjYgE9vmXsXXqTU9kzv6Cbbw098UuZ/ozMot5zQCgs/mNcwVOmFtEiJO+iNDhrhT1c3tQFxMN9LFHiIrOcALVJXX3QJht8bOYguAZ0/bybi+TexZ8Mn9jwPJqONYY+uU/80gKMukgxIK0r499BdinPvAA+Jq8POhpNiKzjOKrPWy73AC6Xyt+Udu'
+      CLUSTER_REGISTRATION_SECRET: AgBKsrWrlm73lW6D1XDq/kFdhmBYX89I1jLrCPKyTVRTfSFRZaEx3M8q+rIWQ3k1z4yuL7E1vpbbtdq9sNa8FfRwvmzqU48v9rf+EMUb3ekU4fJ+oJD7j2EJx0nczNP5aQQr/QkT2EWTmBpMXOBGKI7O8SfYmeOEzYjqx5xCOmoVoxnEPAqxM8ZVpWemldusc2fCb75tvy8rSZcWVycQQM2+LUwmYKW1kBS0bVy5Wma81m6LToGzg/cMtp3bWQaMwtC4m+IX4he/12k08RZfUUFomTv1/qSB4sksmAZHeWTtFrzUhtkHjpTHcKgfCfaGTjY27bTc3w1F9iVipP0XJThXmShpOZsYJ4/2LJNTeapcSSNlV8cJkwxJSei9bFGSnn17uzfF9HiGg8yRZTdTi5cStYSu240dHSpUSMcm9N1Zm1QvuAgMYDQCad8XAcashEJ4VDVPUVzJzjYcYJ+QvImSgPbkDcE+rMPErXbfQE6ZubeAwmbjRWudet46dShQxgtxqqfnHIIQTTg+e6l4WXngJeVkk1MM4mzdjh/3/vta7YszryhdU/2lC0jdceVVwpfh3XHV8ZFxean3pA7Q+xSxANK4wFNdAB+Q3JSEdVNhEaDbJV6vQfsSKtLAuMo1k9wbLvekCq34QX1SzxkDY736ZMySG8Y3aJn+Ni/MrBT5wv9hUSFGOtndMv7aCZaGHd4Wu2Lk6QGuIk8xGyGzNeoPIUrzzaEHJXiwyerB # Used only during initial registration (24h)
+      CLUSTER_COMMUNICATION_SECRET: AgA6IOY/imn/Zu4rs750CJT55Wc53UyvwEKJG/Yu1ibOQ5UBcwEE31B8bwfPP/ImcgANyY5G0IJxg2y29WFsn96AMUG7gzbgSWVYW5XOiMlpNZivpS0SWB3oWL1jx+sHKgYdMWzXQ9WXIxngsSZb8wKCAQVvr2JSgWiFRSzVp56Sbv8DDi3UaDZ/PBS0bI17XtHl5wViX8eHWN7bL1RmtZGD91MekQTt4vOFD95SNIPmMzjFoOqAJ2e3BEy/YTOexBu1wxd2Mv957EwZq3h3DzZIuRasHm5qym3uzsyJfTDzKZSG5Z16sMTJQMtmOdNgneImhQ90veCMiuq5GrzGaOxeB9GJPWXRHj0hsAQhaJVO3E8uLzcoHWNnS2KHEls+Uo4d7/00u670NAPVPpWL3W0GTeNjzKGFEykSaqt4XIDRoa5m0oxT1IZ10c/qvVEqA8T9E0dWn2f+sYp7SHBjFb4YqJtMJYm64zmNaxeB92aKPUdNtv+Gd7DP8sP4OknfVFJyHTsXVQKXu/JVTMxLLbdirceePMa4BRl0cCrjn6Z3jdLwSBPtHZ28djUPfHABuyebiKOj0A+0YBExJQvib4wtrai6G/0P+JbQZVJRug1xly+ayUc1WQtAxEJE1d7Yb5/fZE/gDzaEOn+xPH+wW1XEfbZf2ajU0EmkXrIYyO7jR/kMSo3KTFKulFzRxCJsDIHYF18+sKSNHurFtyS/iku+3HJUyB9Ys4mUiGYrJ7DYaEQBemU= # Used for ongoing cluster-server communication
+  - name: redis-sealed-secrets
+    namespace: *namespace
+    annotations:
+      sealedsecrets.bitnami.com/cluster-wide: 'true'
+    encryptedData:
+      REDIS_PASSWORD: 'AgAZmUgjoUTm0MLoiKHpYfeF6Fk3w7YD3uJ6jl5huZ057IndnnI3Xp0tVo2FbL0TsmikfoeT0Duh6pAstsLTawuUpybJ1Yy9+AygvD5pTu44A5oZBlYqshn3SCF+VMOHuYzeY+9hdzi8v4lEJKZLxt1I3CMiyYuZj/kZyIKQMm81FX+THUNH51Y+p5t4W9XQAl4cTfReHNvhX6gbUIbI9N/qjEUrPmRIs3aetN9SoRERFd/RVylrph+gwoh4Kwe8/rHFclTK7mYmDpuh1Ghn4SSgZOC8JNZGKHAgI4Z1KpJZleOG2wW5nz4EwQjx55GWlmDO+PVOXNj91/h5eSJbUa9nfsc4woz39lkTog+6meM0crf4H6+4TamZ29qggIaq6vFwXw6ck84teOUPvjSZi349kgiQ/omyssCkskZXhisB5882RAtFDVwQxQgkbmkpyXdCaVfGky2Td3MlT3OW9D+yk7dxr1Tm/fwIpZ1FqXsBONf9bNH6ogmxqUEfYp3eBMULd9FpWlxEFVXVhUFIiGH2HebCCacYyRF75J3lOvLa4Zq1FLDtCTJYRcQluqOpkGCkn4T1weHbdigxoLoUEWiMhcqaMEXZ5HhUhCmkS4VN/gwsMaBRaa8mv0GUvnH0WH1LoxMHDEsBOp9tsRhJU6keJUlJNXp2yvk7kErjW45mmOl+v6LsnrsKx1yjvZQtcAAmo3D6vJ/3rqSpc2rc0KpznqjeIzB80YcABIczJp4='
+
+configmaps:
+  - name: orc-config
+    namespace: *namespace
+    data:
+      # Next Auth
+      NEXTAUTH_URL: https://getorc.com
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
