@@ -5,4 +5,3 @@ export * from './service.scanner';
 export * from './storage-class.scanner';
 export * from './persistent-volume.scanner';
 export * from './role.scanner';
-

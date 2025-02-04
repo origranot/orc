@@ -12,7 +12,6 @@ export class KubeService {
   private _versionApi: k8s.VersionApi;
   private _rbacApi: k8s.RbacAuthorizationV1Api;
 
-
   private logger = new Logger(KubeService.name);
 
   constructor() {
@@ -26,7 +25,6 @@ export class KubeService {
     this._storageApi = this.kc.makeApiClient(k8s.StorageV1Api);
     this._versionApi = this.kc.makeApiClient(k8s.VersionApi);
     this._rbacApi = this.kc.makeApiClient(k8s.RbacAuthorizationV1Api);
-
   }
 
   get client() {

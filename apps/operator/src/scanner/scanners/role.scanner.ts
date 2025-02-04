@@ -32,11 +32,13 @@ export class RoleScanner extends BaseResourceScanner<k8s.V1Role> {
       }
 
       const roleBindings = await this.kubeService.rbacApi.listRoleBindingForAllNamespaces();
-      
+
       const isReferenced = roleBindings.items.some((binding) => {
-        return binding.roleRef.kind === 'Role' &&
-               binding.roleRef.name === role.metadata.name &&
-               binding.metadata.namespace === role.metadata.namespace;
+        return (
+          binding.roleRef.kind === 'Role' &&
+          binding.roleRef.name === role.metadata.name &&
+          binding.metadata.namespace === role.metadata.namespace
+        );
       });
 
       if (!isReferenced) {
@@ -50,9 +52,7 @@ export class RoleScanner extends BaseResourceScanner<k8s.V1Role> {
         isOrphaned: false,
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to check role ${role.metadata.namespace}/${role.metadata.name}: ${error.message}`
-      );
+      this.logger.error(`Failed to check role ${role.metadata.namespace}/${role.metadata.name}: ${error.message}`);
       throw error;
     }
   }
