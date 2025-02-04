@@ -46,11 +46,10 @@ export class NamespaceScanner extends BaseResourceScanner<k8s.V1Namespace> {
   }
 
   private async checkNamespaceResources(namespaceName: string) {
-    const [pods, services, deployments, configmaps, secrets] = await Promise.all([
+    const [pods, services, deployments, secrets] = await Promise.all([
       this.kubeService.coreApi.listNamespacedPod({ namespace: namespaceName }),
       this.kubeService.coreApi.listNamespacedService({ namespace: namespaceName }),
       this.kubeService.appsApi.listNamespacedDeployment({ namespace: namespaceName }),
-      this.kubeService.coreApi.listNamespacedConfigMap({ namespace: namespaceName }),
       this.kubeService.coreApi.listNamespacedSecret({ namespace: namespaceName }),
     ]);
 
@@ -58,7 +57,6 @@ export class NamespaceScanner extends BaseResourceScanner<k8s.V1Namespace> {
       pods: pods.items.length,
       services: services.items.length,
       deployments: deployments.items.length,
-      configmaps: configmaps.items.length,
       secrets: secrets.items.length,
     };
   }
