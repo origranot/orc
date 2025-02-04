@@ -3,7 +3,7 @@
 import { createContext, Dispatch, FC, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
 
 export type BreadcrumbListItem = {
-  name: string;
+  name?: string;
   link?: string;
 };
 
