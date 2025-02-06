@@ -46,7 +46,6 @@ export function useClusterQueries({ clusterId, timeRange }: UseClusterQueriesPro
 
     return {
       data: response.data || [],
-      provider: response.provider,
       pagination: response.pagination!,
     };
   };
