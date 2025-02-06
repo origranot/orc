@@ -19,7 +19,9 @@ type ResourceType =
   | 'statefulsets'
   | 'pdbs'
   | 'persistentvolumes'
-  | 'storageclasses';
+  | 'storageclasses'
+  | 'roles'
+  | 'rolebindings';
 
 @Injectable()
 export class KubeCache {
@@ -100,6 +102,14 @@ export class KubeCache {
     return this.getAndCache<k8s.V1Secret>('secrets', () => this.kubeService.coreApi.listSecretForAllNamespaces(params), params);
   }
 
+  async getAllRoleBindings(params?: k8s.RbacAuthorizationV1ApiListRoleBindingForAllNamespacesRequest): Promise<k8s.V1RoleBinding[]> {
+    return this.getAndCache<k8s.V1RoleBinding>(
+      'rolebindings',
+      () => this.kubeService.rbacApi.listRoleBindingForAllNamespaces(params),
+      params,
+    );
+  }
+
   async getNamespacedStatefulSets(params: k8s.AppsV1ApiListNamespacedStatefulSetRequest): Promise<k8s.V1StatefulSet[]> {
     return this.getAndCache<k8s.V1StatefulSet>('statefulsets', () => this.kubeService.appsApi.listNamespacedStatefulSet(params), params);
   }
@@ -110,6 +120,14 @@ export class KubeCache {
       () => this.kubeService.appsApi.listStatefulSetForAllNamespaces(params),
       params,
     );
+  }
+
+  async getAllRoles(params?: k8s.RbacAuthorizationV1ApiListRoleForAllNamespacesRequest): Promise<k8s.V1Role[]> {
+    return this.getAndCache<k8s.V1Role>('roles', () => this.kubeService.rbacApi.listRoleForAllNamespaces(params), params);
+  }
+
+  async getNamespacedRoles(params: k8s.RbacAuthorizationV1ApiListNamespacedRoleRequest): Promise<k8s.V1Role[]> {
+    return this.getAndCache<k8s.V1Role>('roles', () => this.kubeService.rbacApi.listNamespacedRole(params), params);
   }
 
   async getNamespacedIngresses(params: k8s.NetworkingV1ApiListNamespacedIngressRequest): Promise<k8s.V1Ingress[]> {
