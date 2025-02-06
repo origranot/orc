@@ -17,14 +17,13 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@orc/web/ui/custom-ui';
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
-import * as Dialog from '@radix-ui/react-dialog'; // Import Radix Dialog
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
   searchPlaceholder?: string;
   queryKey: string;
   tableTitle?: string;
-  queryFn: (params: { page: number; limit: number; search?: string; sort: {[field: string]: string} }) => Promise<{
+  queryFn: (params: { page: number; limit: number; search?: string; sort: { [field: string]: string } }) => Promise<{
     data: TData[];
     pagination: {
       total: number;
@@ -49,7 +48,7 @@ interface DataTableProps<TData> {
     onClick: () => void;
   }[];
   showViewOptions?: boolean;
-  onRowClick?: (row: any) => any
+  onRowClick?: (row: any) => any;
 }
 
 export function DataTable<TData>({
@@ -61,12 +60,17 @@ export function DataTable<TData>({
   toolbarActions = [],
   showViewOptions = true,
   tableTitle,
-  onRowClick
+  onRowClick,
 }: DataTableProps<TData>) {
   const queryClient = useQueryClient();
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([
+    {
+      id: 'createdAt',
+      desc: true,
+    },
+  ]);
   const [{ pageIndex, pageSize }, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
@@ -119,49 +123,58 @@ export function DataTable<TData>({
 
   return (
     <div>
-    { tableTitle &&<h2 className="p-3 text-lg font-semibold">{tableTitle} ({data?.pagination.total})</h2>}
-    <div className="space-y-4 overflow-hidden bg-card text-card-foreground shadow-sm p-4 border rounded-lg w-full sm:max-w-full">
-      <DataTableToolbar
-        table={table}
-        placeholder={searchPlaceholder}
-        actions={toolbarActions}
-        showViewOptions={showViewOptions}
-        onSearch={setSearchQuery}
-      />
-      <div className="rounded-md border overflow-hidden relative">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} onClick={() => onRowClick && onRowClick(row)} className={onRowClick ? "cursor-pointer" : ""}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+      {tableTitle && (
+        <h2 className="p-3 text-lg font-semibold">
+          {tableTitle} ({data?.pagination.total})
+        </h2>
+      )}
+      <div className="space-y-4 overflow-hidden bg-card text-card-foreground shadow-sm p-4 border rounded-lg w-full sm:max-w-full">
+        <DataTableToolbar
+          table={table}
+          placeholder={searchPlaceholder}
+          actions={toolbarActions}
+          showViewOptions={showViewOptions}
+          onSearch={setSearchQuery}
+        />
+        <div className="rounded-md border overflow-hidden relative">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className={header.column.columnDef.meta?.headerClassName}>
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    onClick={() => onRowClick && onRowClick(row)}
+                    className={onRowClick ? 'cursor-pointer' : ''}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <DataTablePagination table={table} totalItems={data?.pagination?.total ?? 0} />
       </div>
-      <DataTablePagination table={table} totalItems={data?.pagination?.total ?? 0} />
-    </div>
     </div>
   );
 }

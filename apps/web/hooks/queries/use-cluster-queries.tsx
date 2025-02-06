@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getClusterBasicInfo } from '@orc/web/actions/cluster';
 import { getOrphanedResources } from '@orc/web/actions/cluster/orhpaned-resources';
 import { getOrphanedResourcesTimeseries } from '@orc/web/actions/cluster/orphaned-resources-timeseries';
@@ -46,12 +46,13 @@ export function useClusterQueries({ clusterId, timeRange }: UseClusterQueriesPro
 
     return {
       data: response.data || [],
+      provider: response.provider,
       pagination: response.pagination!,
     };
   };
 
   const {
-    data: initialResourcesData,
+    data: initialOrphanedResourcesData,
     isLoading: isLoadingResources,
     error: resourcesError,
   } = useQuery({
@@ -71,7 +72,7 @@ export function useClusterQueries({ clusterId, timeRange }: UseClusterQueriesPro
   return {
     basicInfo,
     isLoadingBasicInfo,
-    initialResourcesData,
+    initialOrphanedResourcesData,
     isLoadingResources,
     resourcesError,
     fetchOrphanedResources,

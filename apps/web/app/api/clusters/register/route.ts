@@ -3,12 +3,27 @@ import { jwtVerify, SignJWT } from 'jose';
 import { redisClient } from '@orc/redis';
 import { prisma } from '@orc/prisma';
 import { z } from 'zod';
+import { V1Node } from '@kubernetes/client-node';
+import { extractProviderDetailsFromNode } from '@orc/cloud';
+
+const nodeSpecSchema = z.object({
+  spec: z
+    .object({
+      providerID: z.string().optional(),
+    })
+    .optional(),
+  metadata: z
+    .object({
+      labels: z.record(z.string()).optional(),
+    })
+    .optional(),
+});
 
 const registrationSchema = z.object({
   token: z.string().min(1, 'Token is required'),
   clusterInfo: z.object({
     version: z.string().min(1, 'Cluster version is required'),
-    nodes: z.number().int().min(1, 'Cluster must have at least one node'),
+    nodes: z.array(nodeSpecSchema).min(1, 'At least one node is required'),
   }),
 });
 
@@ -22,9 +37,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const parsedData = registrationSchema.safeParse(body);
+    console.log('DATA', parsedData.error);
 
     if (!parsedData.success) {
-      return NextResponse.json({ error: 'Invalid request data', details: parsedData.error.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid request data', details: parsedData.error }, { status: 400 });
     }
 
     const { token: registrationToken, clusterInfo } = parsedData.data;
@@ -34,23 +50,27 @@ export async function POST(request: Request) {
 
     const parsedPayload = payloadSchema.safeParse(payload);
     if (!parsedPayload.success) {
-      return NextResponse.json({ error: 'Malformed payload', details: parsedPayload.error.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Unauthorized', details: parsedPayload.error.errors }, { status: 401 });
     }
 
-    // Check if registration token is still valid in Redis
     const clusterName = await redisClient.get(`pending_registration:${parsedPayload.data.registrationId}`);
     if (!clusterName) {
       return NextResponse.json({ error: 'Token expired or invalid' }, { status: 401 });
     }
 
+    const { provider, region } = extractProviderDetailsFromNode(clusterInfo.nodes[0] as V1Node);
+
+    // Create cluster with provider information
     const cluster = await prisma.cluster.create({
       data: {
         user: { connect: { id: parsedPayload.data.userId } },
         name: parsedPayload.data.clusterName,
         version: clusterInfo.version,
-        nodes: clusterInfo.nodes,
+        nodes: clusterInfo.nodes.length,
         registrationId: parsedPayload.data.registrationId,
         lastSeen: new Date(),
+        provider,
+        region,
       },
     });
 
@@ -76,6 +96,8 @@ export async function POST(request: Request) {
       cluster: {
         id: cluster.id,
         name: cluster.name,
+        provider,
+        region,
       },
     });
   } catch (error) {

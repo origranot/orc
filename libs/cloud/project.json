@@ -1,0 +1,24 @@
+{
+  "name": "cloud",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/cloud/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/cloud",
+        "main": "libs/cloud/src/index.ts",
+        "tsConfig": "libs/cloud/tsconfig.lib.json",
+        "assets": ["libs/cloud/*.md"]
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
+      }
+    }
+  }
+}
