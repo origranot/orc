@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common';
-import { KubeModule } from '../kube/kube.module';
 import { ScannerService } from './scanner.service';
-import { NamespaceScanner, ServiceScanner, IngressScanner, PdbScanner, StorageClassScanner, PersistentVolumeScanner, NodeScanner } from './scanners';
-import { SCANNERS_TOKEN } from './scanners.token';
-
-const SCANNERS = [
+import {
   NamespaceScanner,
   ServiceScanner,
   IngressScanner,
   PdbScanner,
   StorageClassScanner,
   PersistentVolumeScanner,
-  NodeScanner
-];
+  NodeScanner,
+} from './scanners';
+import { SCANNERS_TOKEN } from './scanners.token';
+
+const SCANNERS = [NamespaceScanner, ServiceScanner, IngressScanner, PdbScanner, StorageClassScanner, PersistentVolumeScanner, NodeScanner];
 
 @Module({
-  imports: [KubeModule],
   providers: [
     ...SCANNERS,
     {
