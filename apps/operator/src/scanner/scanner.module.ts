@@ -8,10 +8,20 @@ import {
   StorageClassScanner,
   PersistentVolumeScanner,
   NodeScanner,
+  RoleScanner,
 } from './scanners';
 import { SCANNERS_TOKEN } from './scanners.token';
 
-const SCANNERS = [NamespaceScanner, ServiceScanner, IngressScanner, PdbScanner, StorageClassScanner, PersistentVolumeScanner, NodeScanner];
+const SCANNERS = [
+  NamespaceScanner,
+  ServiceScanner,
+  IngressScanner,
+  PdbScanner,
+  StorageClassScanner,
+  PersistentVolumeScanner,
+  NodeScanner,
+  RoleScanner,
+];
 
 @Module({
   providers: [
