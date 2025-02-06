@@ -4,12 +4,6 @@ import { getResourceAge } from '@orc/utils';
 import { SortButton } from '@orc/web/components/data-table/utils';
 import { Badge, HoverCard, HoverCardContent, HoverCardTrigger } from '@orc/web/ui/custom-ui';
 import { InfoIcon } from 'lucide-react';
-function getCostStyle(cost: number | null): { bgColor: string; textColor: string } {
-  if (cost === null) return { bgColor: 'bg-gray-300', textColor: 'text-gray-700' }; // No cost
-  if (cost < 10) return { bgColor: 'bg-green-400', textColor: 'text-black' }; // Low cost
-  if (cost < 50) return { bgColor: 'bg-yellow-400', textColor: 'text-black' }; // Medium cost
-  return { bgColor: 'bg-red-400', textColor: 'text-white' }; // High cost
-}
 
 export const columns: ColumnDef<OrphanedResource>[] = [
   {
@@ -17,6 +11,7 @@ export const columns: ColumnDef<OrphanedResource>[] = [
     header: 'Name',
     cell: ({ row }) => {
       const name = row.getValue('name') as string;
+
       return (
         <div className="flex items-center gap-2">
           <span className="font-medium">{name}</span>
@@ -66,18 +61,29 @@ export const columns: ColumnDef<OrphanedResource>[] = [
     },
   },
   {
-    accessorKey: 'cost',
+    accessorKey: 'costType',
     header: ({ column }) => <SortButton column={column}>Cost</SortButton>,
     cell: ({ row }) => {
-      const cost = row.original.cost || 0; // Default to 0 if cost is null
-      const variant = cost != null ? (cost > 20 ? 'destructive' : cost > 0 ? 'warning' : 'success') : 'secondary';
+      const costType = row.original.costType;
+      const variant = costType === 'DIRECT' ? 'destructive' : costType === 'INDIRECT' ? 'warning' : 'success';
 
       return (
-        <div className="flex items-center justify-center">
-          <Badge variant={variant} className="text-xs px-2 py-0.5">
-            {cost != null ? `${cost}$` : 'N/A'}
-          </Badge>
-        </div>
+        <HoverCard>
+          <HoverCardTrigger>
+            <Badge variant={variant} className="text-xs px-2 py-0.5">
+              {costType === 'DIRECT' || costType === 'INDIRECT' ? '$' : '-'}
+            </Badge>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-60">
+            <div className="space-y-2">
+              <p className="text-sm">
+                {costType === 'DIRECT' && 'This resource directly incurs cloud provider charges'}
+                {costType === 'INDIRECT' && 'This resource uses resources that cost money'}
+                {costType === 'NONE' && 'This resource does not incur any charges'}
+              </p>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
       );
     },
   },

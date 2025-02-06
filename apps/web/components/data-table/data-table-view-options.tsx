@@ -17,12 +17,6 @@ interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
 }
 
-declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends RowData, TValue> {
-    title: string;
-  }
-}
-
 export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu>

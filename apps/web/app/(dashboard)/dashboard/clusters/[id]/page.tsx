@@ -21,7 +21,7 @@ export default function ClusterDetailsPage() {
   const {
     basicInfo,
     isLoadingBasicInfo,
-    initialResourcesData,
+    initialOrphanedResourcesData,
     isLoadingResources,
     resourcesError,
     fetchOrphanedResources,
@@ -66,7 +66,7 @@ export default function ClusterDetailsPage() {
         <div className="space-y-4 overflow-hidden">
           <OrphanedResourcesTable
             clusterId={clusterId}
-            initialData={initialResourcesData}
+            initialData={initialOrphanedResourcesData}
             isLoading={isLoadingResources}
             fetchResources={fetchOrphanedResources}
           />

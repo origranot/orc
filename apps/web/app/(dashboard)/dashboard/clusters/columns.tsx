@@ -1,6 +1,6 @@
 'use client';
 
-import { CellContext, ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import {
   Badge,
   Button,
@@ -9,6 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
 } from '@orc/web/ui/custom-ui';
 import { MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
@@ -17,13 +20,27 @@ import { DeleteClusterModal } from '@orc/web/components/modals/cluster-delete-mo
 import { GetAllClustersResponse } from './page';
 import { useRouter } from 'next/navigation';
 import { SortButton } from '@orc/web/components/data-table/utils';
+import { ProviderIcon } from '@orc/web/components/clusters/provider-icon';
 
-const ClusterNameCell = ({ row }: { row: any }) => {
+const ClusterNameCell = ({ row }: { row: Row<GetAllClustersResponse> }) => {
   const { push } = useRouter();
 
   return (
-    <div className="cursor-pointer underline" onClick={() => push(`/dashboard/clusters/${row.original.id}`)}>
-      {row.original.name}
+    <div className="flex items-center gap-2">
+      <HoverCard>
+        <HoverCardTrigger>
+          <div className="flex justify-center w-8">
+            <ProviderIcon provider={row.original.provider} />
+          </div>
+        </HoverCardTrigger>
+        <HoverCardContent className="w-auto p-2">
+          <span>{row.original.provider.charAt(0).toUpperCase() + row.original.provider.slice(1).toLowerCase()}</span>
+        </HoverCardContent>
+      </HoverCard>
+
+      <span className="cursor-pointer hover:underline" onClick={() => push(`/dashboard/clusters/${row.original.id}`)}>
+        {row.original.name}
+      </span>
     </div>
   );
 };
