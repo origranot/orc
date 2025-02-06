@@ -7,7 +7,7 @@ import { KubeCache } from '../../kube/cache/kube-cache.service';
 
 @Injectable()
 export class NodeScanner extends BaseResourceScanner<k8s.V1Node> {
-  private usedNodes = new Map<string, Boolean>();
+  private usedNodes = new Map<string, boolean>();
 
   constructor(private readonly kubeCache: KubeCache, config: ConfigService) {
     super(config);
