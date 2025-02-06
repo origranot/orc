@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { KubeService } from './kube.service';
+import { KubeCache } from './cache/kube-cache.service';
 
+@Global()
 @Module({
-  providers: [KubeService],
-  exports: [KubeService],
+  providers: [KubeService, KubeCache],
+  exports: [KubeService, KubeCache],
 })
 export class KubeModule {}

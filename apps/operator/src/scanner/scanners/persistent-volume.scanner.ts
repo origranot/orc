@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { BaseResourceScanner } from '../base.scanner';
 import * as k8s from '@kubernetes/client-node';
-import { KubeService } from '../../kube/kube.service';
 import { ConfigService } from '../../config/config.service';
 import { CleanupResult } from '../../types';
 import { enrichKubernetesObject } from '../../utils/kube';
+import { KubeService } from '../../kube/kube.service';
+import { KubeCache } from '../../kube/cache/kube-cache.service';
 
 @Injectable()
 export class PersistentVolumeScanner extends BaseResourceScanner<k8s.V1PersistentVolume> {
-  constructor(private readonly kubeService: KubeService, config: ConfigService) {
+  constructor(private readonly kubeCache: KubeCache, private readonly kubeService: KubeService, config: ConfigService) {
     super(config);
   }
 
   async scan(): Promise<k8s.V1PersistentVolume[]> {
     try {
-      const response = await this.kubeService.coreApi.listPersistentVolume();
-      return response.items.map((pv) => enrichKubernetesObject(pv, 'PersistentVolume') as k8s.V1PersistentVolume);
+      const response = await this.kubeCache.getPersistentVolumes();
+      return response.map((pv) => enrichKubernetesObject(pv, 'PersistentVolume') as k8s.V1PersistentVolume);
     } catch (error) {
       this.logger.error(`Failed to scan PersistentVolume: ${error.message}`);
       throw error;
