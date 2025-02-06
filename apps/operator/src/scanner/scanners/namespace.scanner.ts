@@ -1,21 +1,22 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BaseResourceScanner } from '../base.scanner';
 import * as k8s from '@kubernetes/client-node';
 import { KubeService } from '../../kube/kube.service';
 import { ConfigService } from '../../config/config.service';
 import { CleanupResult } from '../../types';
 import { enrichKubernetesObject } from '../../utils/kube';
+import { KubeCache } from '../../kube/cache/kube-cache.service';
 
 @Injectable()
 export class NamespaceScanner extends BaseResourceScanner<k8s.V1Namespace> {
-  constructor(private readonly kubeService: KubeService, config: ConfigService) {
+  constructor(private readonly kubeService: KubeService, private readonly kubeCache: KubeCache, config: ConfigService) {
     super(config);
   }
 
   async scan(): Promise<k8s.V1Namespace[]> {
     try {
-      const response = await this.kubeService.coreApi.listNamespace();
-      return response.items.map((namespace) => enrichKubernetesObject(namespace, 'Namespace'));
+      const response = await this.kubeCache.getNamespaces();
+      return response.map((namespace) => enrichKubernetesObject(namespace, 'Namespace'));
     } catch (error) {
       this.logger.error(`Failed to scan namespaces: ${error.message}`);
       throw error;
@@ -46,20 +47,25 @@ export class NamespaceScanner extends BaseResourceScanner<k8s.V1Namespace> {
   }
 
   private async checkNamespaceResources(namespaceName: string) {
-    const [pods, services, deployments, configmaps, secrets] = await Promise.all([
-      this.kubeService.coreApi.listNamespacedPod({ namespace: namespaceName }),
-      this.kubeService.coreApi.listNamespacedService({ namespace: namespaceName }),
-      this.kubeService.appsApi.listNamespacedDeployment({ namespace: namespaceName }),
-      this.kubeService.coreApi.listNamespacedConfigMap({ namespace: namespaceName }),
-      this.kubeService.coreApi.listNamespacedSecret({ namespace: namespaceName }),
+    const params = { namespace: namespaceName };
+
+    const secretsFieldSelector = ['type!=kubernetes.io/service-account-token', 'type!=kubernetes.io/dockerconfigjson'];
+
+    const [pods, services, deployments, secrets] = await Promise.all([
+      this.kubeCache.getNamespacedPods(params),
+      this.kubeCache.getNamespacedServices(params),
+      this.kubeCache.getNamespacedDeployments(params),
+      this.kubeCache.getNamespacedSecrets({
+        ...params,
+        fieldSelector: secretsFieldSelector.join(','),
+      }),
     ]);
 
     return {
-      pods: pods.items.length,
-      services: services.items.length,
-      deployments: deployments.items.length,
-      configmaps: configmaps.items.length,
-      secrets: secrets.items.length,
+      pods: pods.length,
+      services: services.length,
+      deployments: deployments.length,
+      secrets: secrets.length,
     };
   }
 

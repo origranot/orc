@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { KubeModule } from '../kube/kube.module';
 import { ScannerService } from './scanner.service';
 import {
   NamespaceScanner,
@@ -8,14 +7,14 @@ import {
   PdbScanner,
   StorageClassScanner,
   PersistentVolumeScanner,
+  NodeScanner,
   RoleScanner,
 } from './scanners';
 import { SCANNERS_TOKEN } from './scanners.token';
 
-const SCANNERS = [NamespaceScanner, ServiceScanner, IngressScanner, PdbScanner, StorageClassScanner, PersistentVolumeScanner, RoleScanner];
+const SCANNERS = [NamespaceScanner, ServiceScanner, IngressScanner, PdbScanner, StorageClassScanner, PersistentVolumeScanner, NodeScanner, RoleScanner];
 
 @Module({
-  imports: [KubeModule],
   providers: [
     ...SCANNERS,
     {

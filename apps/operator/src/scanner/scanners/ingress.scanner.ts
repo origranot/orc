@@ -1,21 +1,22 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BaseResourceScanner } from '../base.scanner';
 import * as k8s from '@kubernetes/client-node';
-import { KubeService } from '../../kube/kube.service';
 import { ConfigService } from '../../config/config.service';
 import { CleanupResult } from '../../types';
 import { enrichKubernetesObject } from '../../utils/kube';
+import { KubeService } from '../../kube/kube.service';
+import { KubeCache } from '../../kube/cache/kube-cache.service';
 
 @Injectable()
 export class IngressScanner extends BaseResourceScanner<k8s.V1Ingress> {
-  constructor(private readonly kubeService: KubeService, config: ConfigService) {
+  constructor(private readonly kubeService: KubeService, private readonly kubeCache: KubeCache, config: ConfigService) {
     super(config);
   }
 
   async scan(): Promise<k8s.V1Ingress[]> {
     try {
-      const response = await this.kubeService.networkingApi.listIngressForAllNamespaces();
-      return response.items.map((ingress) => enrichKubernetesObject(ingress, 'Ingress'));
+      const response = await this.kubeCache.getAllIngresses();
+      return response.map((ingress) => enrichKubernetesObject(ingress, 'Ingress'));
     } catch (error) {
       this.logger.error(`Failed to scan ingresses: ${error.message}`);
       throw error;

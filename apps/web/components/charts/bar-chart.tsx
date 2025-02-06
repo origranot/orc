@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Rectangle } from 'recharts';
+import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useTheme } from 'next-themes';
 
 interface BarChartProps {
@@ -13,27 +13,29 @@ interface BarChartProps {
   }>;
   yAxisWidth?: number;
 }
+
 const CustomBar = (props: any) => {
-  const { x, y, width, height, stroke } = props;
-  const patternId = `striped-${x}-${y}`; // unique ID for each bar
+  const { x, y, width, height, stroke, dataIndex, activeIndex } = props;
+  const patternId = `striped-${x}-${y}`;
 
   return (
     <g>
       <defs>
         <pattern id={patternId} width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="10" stroke={stroke} strokeWidth="1" strokeOpacity="0.5" />
+          <line x1="0" y1="0" x2="0" y2="10" stroke={stroke} strokeWidth="1" strokeOpacity="0.3" />
         </pattern>
       </defs>
 
-      {/* Background rectangle with pattern */}
-      <rect x={x} y={y} width={width} height={height} fill={`url(#${patternId})`} />
+      {/* Background rectangle with subtle striped pattern */}
+      <rect x={x} y={y} width={width} height={height} fill={`url(#${patternId})`} fillOpacity="1" />
 
-      {/* Border lines */}
+      {/* Border changes only on hover */}
       <path
         d={`M${x},${y} L${x + width},${y} L${x + width},${y + height} M${x},${y} L${x},${y + height}`}
-        stroke={stroke}
+        stroke={dataIndex === activeIndex ? 'hsl(var(--primary))' : stroke}
+        strokeWidth={dataIndex === activeIndex ? 1.5 : 1}
+        strokeDasharray={dataIndex === activeIndex ? '4' : '0'}
         fill="none"
-        strokeWidth={1}
       />
     </g>
   );
@@ -74,7 +76,7 @@ export function BarChart({ data, index, categories, yAxisWidth = 50 }: BarChartP
       <RechartsBarChart
         data={data}
         onMouseMove={(state: any) => {
-          if (state?.activeTooltipIndex) {
+          if (state?.activeTooltipIndex !== undefined) {
             setActiveIndex(state.activeTooltipIndex);
           } else {
             setActiveIndex(null);
@@ -104,21 +106,8 @@ export function BarChart({ data, index, categories, yAxisWidth = 50 }: BarChartP
             key={category.key}
             dataKey={category.key}
             name={category.label}
-            shape={<CustomBar />}
+            shape={(props: any) => <CustomBar {...props} activeIndex={activeIndex} dataIndex={props.index} />}
             stroke={chartConfig.color}
-            activeBar={(props: any) => {
-              const { x, y, width, height } = props;
-              return (
-                <path
-                  d={`M${x},${y} L${x + width},${y} L${x + width},${y + height} M${x},${y} L${x},${y + height}`}
-                  stroke={chartConfig.color}
-                  strokeDasharray="4"
-                  strokeDashoffset="2"
-                  strokeWidth={1}
-                  fill="none"
-                />
-              );
-            }}
           />
         ))}
       </RechartsBarChart>

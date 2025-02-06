@@ -1,16 +1,6 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Skeleton,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@orc/web/ui/custom-ui';
+import { Card, CardContent, Skeleton, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@orc/web/ui/custom-ui';
 import { Cluster } from '@prisma/client';
-import { Activity, AlertCircle, CheckCircle2, Clock, Info, Server, Tag } from 'lucide-react';
+import { Activity, AlertCircle, CheckCircle2, Info, Server, Tag } from 'lucide-react';
 import { formatDistanceToNow, differenceInHours } from 'date-fns';
 
 interface ClusterDetailsProps {
@@ -55,7 +45,7 @@ function LastSeenStatus({ lastSeen }: { lastSeen: Date | null }) {
       <Tooltip>
         <TooltipTrigger className="flex items-center gap-2 text-sm">
           {status.icon}
-          <span className={`${status.color}`}>{formattedTime}</span>
+          <span className={`${status.color} hidden md:inline`}>{formattedTime}</span>
         </TooltipTrigger>
         <TooltipContent>
           <p>{status.message}</p>
