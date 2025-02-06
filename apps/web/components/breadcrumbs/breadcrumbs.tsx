@@ -1,6 +1,15 @@
 'use client';
 
-import { cn, Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@orc/web/ui/custom-ui';
+import {
+  cn,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  Skeleton,
+} from '@orc/web/ui/custom-ui';
 import { FC, useEffect, useMemo } from 'react';
 import { BreadcrumbListItem, useBreadcrumbs } from '@orc/web/providers/breadcrumbs-provider';
 import { usePathname } from 'next/navigation';
@@ -18,10 +27,16 @@ export const Breadcrumbs: FC<BreadcrumbsProps> = ({ className }) => {
   }, [pathname]);
 
   const content = useMemo(() => {
-    if (!items) {
-      return [];
-    }
-    return items.flatMap((item, index) => {
+    return items?.flatMap((item, index) => {
+      if (!item.name) {
+        return [
+          index > 0 && <BreadcrumbSeparator key={`breadcrumb-separator-${index}`} />,
+          <BreadcrumbItem key={`breadcrumb-skeleton-${index}`}>
+            <Skeleton className="w-24 h-4" />
+          </BreadcrumbItem>,
+        ];
+      }
+
       return [
         index > 0 && <BreadcrumbSeparator key={`breadcrumb-separator-${index}-${item.name}`} />,
         !item.link ? (

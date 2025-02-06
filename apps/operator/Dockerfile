@@ -14,7 +14,6 @@ RUN npx nx build operator
 # Use a lighter image for the runtime
 FROM node:22-alpine3.20 AS runtime
 
-# Set the working directory
 WORKDIR /app
 
 # Copy the build artifacts and node_modules from the builder stage

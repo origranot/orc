@@ -68,6 +68,8 @@ model Cluster {
     lastSeen       DateTime?
     userId         String
     status         ClusterStatus @default(ACTIVE)
+    provider       Provider      @default(OTHER)
+    region         String?
     user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
     snapshots      Snapshot[]
     createdAt      DateTime      @default(now())
@@ -91,28 +93,31 @@ model Snapshot {
 }
 
 model OrphanedResource {
-    id           String                 @id @default(uuid())
-    snapshotId   String
-    snapshot     Snapshot               @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
-    kind         String
-    name         String
-    namespace    String?
-    uid          String
-    createdAt    DateTime               @default(now())
-    age          DateTime?
-    discoveredAt DateTime               @default(now())
-    deletedAt    DateTime?
-    owner        String?
-    reason       String?
-    cost         Float?
-    spec         String?
-    status       OrphanedResourceStatus @default(PENDING)
+    id                   String                 @id @default(uuid())
+    snapshotId           String
+    snapshot             Snapshot               @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+    kind                 String
+    name                 String
+    namespace            String?
+    uid                  String
+    createdAt            DateTime               @default(now())
+    age                  DateTime?
+    discoveredAt         DateTime               @default(now())
+    deletedAt            DateTime?
+    owner                String?
+    reason               String?
+    cost                 Float?
+    costType             ResourceCostType       @default(NONE)
+    estimatedMonthlyCost Float?
+    spec                 String?
+    status               OrphanedResourceStatus @default(PENDING)
 
     @@unique([snapshotId, uid])
     @@index([snapshotId])
     @@index([status])
     @@index([kind])
     @@index([namespace])
+    @@index([costType])
     @@index([discoveredAt])
     @@index([deletedAt])
 }
@@ -123,9 +128,23 @@ enum OrphanedResourceStatus {
     IGNORED
 }
 
+enum ResourceCostType {
+    DIRECT // Directly costs money (e.g., LoadBalancer, PV with cloud storage)
+    INDIRECT // Uses resources that cost money (e.g., Pods)
+    NONE // No cost (e.g., ConfigMap)
+}
+
 enum ClusterStatus {
     ACTIVE
     PENDING
     INACTIVE
     DELETED
+}
+
+enum Provider {
+    AWS
+    GCP
+    AZURE
+    DIGITALOCEAN
+    OTHER
 }

@@ -2,7 +2,13 @@
 CREATE TYPE "OrphanedResourceStatus" AS ENUM ('PENDING', 'DELETED', 'IGNORED');
 
 -- CreateEnum
+CREATE TYPE "ResourceCostType" AS ENUM ('DIRECT', 'INDIRECT', 'NONE');
+
+-- CreateEnum
 CREATE TYPE "ClusterStatus" AS ENUM ('ACTIVE', 'PENDING', 'INACTIVE', 'DELETED');
+
+-- CreateEnum
+CREATE TYPE "Provider" AS ENUM ('AWS', 'GCP', 'AZURE', 'DIGITALOCEAN', 'OTHER');
 
 -- CreateTable
 CREATE TABLE "Account" (
@@ -62,6 +68,8 @@ CREATE TABLE "Cluster" (
     "lastSeen" TIMESTAMP(3),
     "userId" TEXT NOT NULL,
     "status" "ClusterStatus" NOT NULL DEFAULT 'ACTIVE',
+    "provider" "Provider" NOT NULL DEFAULT 'OTHER',
+    "region" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -93,6 +101,8 @@ CREATE TABLE "OrphanedResource" (
     "owner" TEXT,
     "reason" TEXT,
     "cost" DOUBLE PRECISION,
+    "costType" "ResourceCostType" NOT NULL DEFAULT 'NONE',
+    "estimatedMonthlyCost" DOUBLE PRECISION,
     "spec" TEXT,
     "status" "OrphanedResourceStatus" NOT NULL DEFAULT 'PENDING',
 
@@ -154,6 +164,9 @@ CREATE INDEX "OrphanedResource_kind_idx" ON "OrphanedResource"("kind");
 CREATE INDEX "OrphanedResource_namespace_idx" ON "OrphanedResource"("namespace");
 
 -- CreateIndex
+CREATE INDEX "OrphanedResource_costType_idx" ON "OrphanedResource"("costType");
+
+-- CreateIndex
 CREATE INDEX "OrphanedResource_discoveredAt_idx" ON "OrphanedResource"("discoveredAt");
 
 -- CreateIndex
@@ -172,7 +185,7 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Cluster" ADD CONSTRAINT "Cluster_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Snapshot" ADD CONSTRAINT "Snapshot_clusterId_fkey" FOREIGN KEY ("clusterId") REFERENCES "Cluster"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Snapshot" ADD CONSTRAINT "Snapshot_clusterId_fkey" FOREIGN KEY ("clusterId") REFERENCES "Cluster"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrphanedResource" ADD CONSTRAINT "OrphanedResource_snapshotId_fkey" FOREIGN KEY ("snapshotId") REFERENCES "Snapshot"("id") ON DELETE CASCADE ON UPDATE CASCADE;

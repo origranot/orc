@@ -53,6 +53,7 @@ import {
   Gift,
   Folder,
 } from 'lucide-react';
+import { FaAws, FaDigitalOcean, FaGoogle, FaMicrosoft } from 'react-icons/fa';
 
 export type Icon = LucideIcon;
 
@@ -139,6 +140,10 @@ export const Icons = {
       ></path>
     </svg>
   ),
+  aws: FaAws,
+  gcp: FaGoogle,
+  azure: FaMicrosoft,
+  digitalocean: FaDigitalOcean,
   google: ({ ...props }: LucideProps) => (
     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" {...props}>
       <title>Google</title>

@@ -104,10 +104,10 @@ export class TokenManagerService implements OnModuleInit {
     const config = this.configService.get();
 
     try {
-      const [version, nodes] = await Promise.all([this.kubeService.getClusterVersion(), this.kubeService.getNodeCount()]);
+      const [version, nodes] = await Promise.all([this.kubeService.getClusterVersion(), this.kubeService.coreApi.listNode()]);
       const clusterInfo = {
         version,
-        nodes,
+        nodes: nodes.items,
       };
 
       const response = await axios.post(

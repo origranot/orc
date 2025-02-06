@@ -1,4 +1,4 @@
-namespace: &namespace orc
+namespace: &namespace getorc
 
 global:
   # Global registry for the images
