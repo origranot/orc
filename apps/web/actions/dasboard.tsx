@@ -17,7 +17,9 @@ export async function getDashboardData() {
       select: {
         id: true,
         name: true,
+        provider: true,
         lastSeen: true,
+        score: true,
         snapshots: {
           orderBy: {
             createdAt: 'desc',
@@ -76,11 +78,17 @@ export async function getDashboardData() {
     // Sort clusters by orphaned resources count
     const sortedClusters = [...transformedClusters].sort((a, b) => b.orphanedResourcesCount - a.orphanedResourcesCount);
 
+    // Calculate average health score
+    const clustersWithScore = clusters.filter((cluster) => cluster.score !== null && cluster.score !== undefined);
+    const averageHealthScore =
+      clustersWithScore.length > 0 ? clustersWithScore.reduce((sum, cluster) => sum + cluster.score!, 0) / clustersWithScore.length : null;
+
     const data = {
       stats: {
         totalClusters: clusters.length,
         totalOrphanedResources,
         clustersWithOrphanedResources: transformedClusters.filter((cluster) => cluster.orphanedResourcesCount > 0).length,
+        averageHealthScore: averageHealthScore,
       },
       orphanedResourcesByCluster: transformedClusters.map((cluster) => ({
         clusterName: cluster.name,
@@ -90,6 +98,7 @@ export async function getDashboardData() {
       topClustersWithOrphanedResources: sortedClusters.slice(0, 5).map((cluster) => ({
         id: cluster.id,
         name: cluster.name,
+        provider: cluster.provider,
         orphanedResources: cluster.orphanedResourcesCount,
         lastSeen: cluster.lastSeen,
         lastSnapshotAt: cluster.lastSnapshot?.createdAt,

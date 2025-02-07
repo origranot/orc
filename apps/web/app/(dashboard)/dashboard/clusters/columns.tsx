@@ -21,8 +21,9 @@ import { GetAllClustersResponse } from './page';
 import { useRouter } from 'next/navigation';
 import { SortButton } from '@orc/web/components/data-table/utils';
 import { ProviderIcon } from '@orc/web/components/clusters/provider-icon';
+import { Provider } from '@prisma/client';
 
-const ClusterNameCell = ({ row }: { row: Row<GetAllClustersResponse> }) => {
+export const ClusterNameCell = ({ id, name, provider }: { id: string; name: string; provider: Provider }) => {
   const { push } = useRouter();
 
   return (
@@ -30,16 +31,16 @@ const ClusterNameCell = ({ row }: { row: Row<GetAllClustersResponse> }) => {
       <HoverCard>
         <HoverCardTrigger>
           <div className="flex justify-center w-8">
-            <ProviderIcon provider={row.original.provider} />
+            <ProviderIcon provider={provider} />
           </div>
         </HoverCardTrigger>
         <HoverCardContent className="w-auto p-2">
-          <span>{row.original.provider.charAt(0).toUpperCase() + row.original.provider.slice(1).toLowerCase()}</span>
+          <span>{provider.charAt(0).toUpperCase() + provider.slice(1).toLowerCase()}</span>
         </HoverCardContent>
       </HoverCard>
 
-      <span className="cursor-pointer hover:underline" onClick={() => push(`/dashboard/clusters/${row.original.id}`)}>
-        {row.original.name}
+      <span className="cursor-pointer hover:underline" onClick={() => push(`/dashboard/clusters/${id}`)}>
+        {name}
       </span>
     </div>
   );
@@ -86,7 +87,7 @@ export const columns: ColumnDef<GetAllClustersResponse>[] = [
   {
     accessorKey: 'name',
     header: 'Cluster',
-    cell: ({ row }) => <ClusterNameCell row={row} />,
+    cell: ({ row }) => <ClusterNameCell id={row.original.id} name={row.original.name} provider={row.original.provider} />,
   },
   {
     accessorKey: 'version',

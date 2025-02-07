@@ -5,7 +5,6 @@ import { DataTable } from '@orc/web/components/data-table/data-table';
 import { DataTableSkeleton } from '@orc/web/components/shared/advanced-skeleton';
 import { columns } from './orphaned-resources-columns';
 import React from 'react';
-import { ResourceSpecModal } from './resource-spec-modal';
 
 interface OrphanedResourcesTableProps {
   clusterId: string;
@@ -23,14 +22,6 @@ interface OrphanedResourcesTableProps {
 }
 
 export function OrphanedResourcesTable({ clusterId, initialData, isLoading, fetchResources }: OrphanedResourcesTableProps) {
-  const [isResourceSpecModalOpen, setResourceSpecModalOpen] = React.useState(false);
-  const [selectedResourceSpec, setSelectedResourceSpec] = React.useState(null);
-
-  const handleRowClick = (row: any) => {
-    setSelectedResourceSpec(row.original);
-    setResourceSpecModalOpen(true);
-  };
-
   if (isLoading) {
     return (
       <DataTableSkeleton
@@ -53,12 +44,6 @@ export function OrphanedResourcesTable({ clusterId, initialData, isLoading, fetc
         queryFn={fetchResources}
         initialData={initialData}
         searchPlaceholder="Search orphaned resources..."
-        onRowClick={handleRowClick}
-      />
-      <ResourceSpecModal
-        isOpen={isResourceSpecModalOpen}
-        onClose={() => setResourceSpecModalOpen(false)}
-        resourceSpec={selectedResourceSpec}
       />
     </div>
   );

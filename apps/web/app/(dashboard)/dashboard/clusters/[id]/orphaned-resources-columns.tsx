@@ -18,7 +18,7 @@ export const columns: ColumnDef<OrphanedResource>[] = [
           {row.original.reason && (
             <HoverCard>
               <HoverCardTrigger>
-                <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                <InfoIcon className="h-4 w-4 text-muted-foreground cursor-pointer" />
               </HoverCardTrigger>
               <HoverCardContent className="w-80">
                 <div className="space-y-2">
@@ -70,7 +70,7 @@ export const columns: ColumnDef<OrphanedResource>[] = [
       return (
         <HoverCard>
           <HoverCardTrigger>
-            <Badge variant={variant} className="text-xs px-2 py-0.5">
+            <Badge variant={variant} className="text-xs px-2 py-0.5 cursor-pointer">
               {costType === 'DIRECT' || costType === 'INDIRECT' ? '$' : '-'}
             </Badge>
           </HoverCardTrigger>

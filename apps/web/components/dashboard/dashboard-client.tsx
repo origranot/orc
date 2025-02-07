@@ -28,16 +28,20 @@ import { getDashboardData } from '@orc/web/actions/dasboard';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow, formatRelative } from 'date-fns';
 import { NoData } from '@orc/web/components/shared/no-data';
+import { Provider } from '@prisma/client';
+import { ClusterNameCell } from '@orc/web/app/(dashboard)/dashboard/clusters/columns';
 
 interface DashboardStats {
   totalClusters: number;
   totalOrphanedResources: number;
   clustersWithOrphanedResources: number;
+  averageHealthScore: number | null;
 }
 
 interface ClusterData {
   id: string;
   name: string;
+  provider: Provider;
   orphanedResources: number;
   lastSeen: Date;
 }
@@ -162,7 +166,7 @@ export function DashboardContent() {
                 <Server className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{data?.stats.totalClusters ?? 'N/A'}</div>
+                <div className="text-2xl font-bold">{data?.stats.totalClusters ? data.stats.totalClusters : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground">Active Kubernetes clusters</p>
               </CardContent>
             </Card>
@@ -173,7 +177,7 @@ export function DashboardContent() {
                 <Trash2 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{data?.stats.totalOrphanedResources ?? 'N/A'}</div>
+                <div className="text-2xl font-bold">{data?.stats.totalOrphanedResources ? data.stats.totalOrphanedResources : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground">Across all clusters</p>
               </CardContent>
             </Card>
@@ -184,7 +188,9 @@ export function DashboardContent() {
                 <AlertTriangle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{data?.stats.clustersWithOrphanedResources ?? 'N/A'}</div>
+                <div className="text-2xl font-bold">
+                  {data?.stats.clustersWithOrphanedResources ? data.stats.clustersWithOrphanedResources : 'N/A'}
+                </div>
                 <p className="text-xs text-muted-foreground">Requiring attention</p>
               </CardContent>
             </Card>
@@ -195,7 +201,7 @@ export function DashboardContent() {
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">N/A</div>
+                <div className="text-2xl font-bold">{data?.stats.averageHealthScore ? data.stats.averageHealthScore : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground">Across all clusters</p>
               </CardContent>
             </Card>
@@ -223,7 +229,7 @@ export function DashboardContent() {
         </CardContent>
       </Card>
 
-      <Card className='mb-8'>
+      <Card className="mb-8">
         <CardHeader>
           <CardTitle>Top 5 Clusters with Orphaned Resources</CardTitle>
         </CardHeader>
@@ -243,7 +249,9 @@ export function DashboardContent() {
               ) : data?.topClustersWithOrphanedResources && data.topClustersWithOrphanedResources.length > 0 ? (
                 data.topClustersWithOrphanedResources.map((cluster) => (
                   <TableRow key={cluster.id}>
-                    <TableCell className="font-medium">{cluster.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <ClusterNameCell id={cluster.id} name={cluster.name} provider={cluster.provider} />
+                    </TableCell>
                     <TableCell>{cluster.orphanedResources}</TableCell>
                     <TableCell>
                       <LastSeenCell date={cluster.lastSeen} />
