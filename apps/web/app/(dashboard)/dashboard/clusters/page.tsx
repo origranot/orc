@@ -62,7 +62,7 @@ export default function ClustersPage() {
   const toolbarActions = [
     {
       icon: <Plus className="h-4 w-4" />,
-      label: 'Import Cluster',
+      label: 'Connect Cluster',
       onClick: () => setIsImportModalOpen(true),
     },
   ];
