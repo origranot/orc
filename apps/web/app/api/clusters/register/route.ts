@@ -37,7 +37,6 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const parsedData = registrationSchema.safeParse(body);
-    console.log('DATA', parsedData.error);
 
     if (!parsedData.success) {
       return NextResponse.json({ error: 'Invalid request data', details: parsedData.error }, { status: 400 });

@@ -8,7 +8,7 @@ import { TokenManagerService } from '../token-manager/token-manager.service';
 export class ReporterService {
   constructor(private readonly configService: ConfigService, private readonly tokenManagerService: TokenManagerService) {}
 
-  async sendReport(report: BatchScanReport) {
+  async sendOrphanedResourcesReport(report: BatchScanReport) {
     const payload = {
       timestamp: report.timestamp,
       orphanedResources: report.reports.flatMap((r) =>
@@ -30,6 +30,19 @@ export class ReporterService {
     };
 
     await axios.post(`${this.configService.get().consoleUrl}/api/clusters/orphaned-resources`, payload, {
+      headers: {
+        Authorization: `Bearer ${this.tokenManagerService.getToken()}`,
+      },
+    });
+  }
+
+  async sendClusterDataReport(version: string, nodesCount: number) {
+    const payload = {
+      version,
+      nodesCount,
+    };
+
+    await axios.post(`${this.configService.get().consoleUrl}/api/clusters/data`, payload, {
       headers: {
         Authorization: `Bearer ${this.tokenManagerService.getToken()}`,
       },

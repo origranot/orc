@@ -1,15 +1,9 @@
 import { prisma } from '@orc/prisma';
 import { updateClusterScore } from '@orc/web/lib/score';
-import { jwtVerify } from 'jose';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getResourceCostType } from '@orc/cloud';
-
-const communicationPayloadSchema = z.object({
-  clusterName: z.string().min(1, 'Cluster name is required'),
-  clusterId: z.string().min(1, 'Cluster ID is required'),
-  userId: z.string().min(1, 'User ID is required'),
-});
+import { authenticateRequest, CommunicationPayload } from '@orc/web/lib/api/auth';
 
 const ownerSchema = z
   .object({
@@ -50,24 +44,12 @@ const reportSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    // Verify token
-    const token = request.headers.get('Authorization')?.split(' ')[1];
-    if (!token) {
-      return new Response('Unauthorized', { status: 401 });
-    }
-
-    const secret = new TextEncoder().encode(process.env.CLUSTER_COMMUNICATION_SECRET);
-    const { payload } = await jwtVerify(token, secret);
-    const parsedPayload = communicationPayloadSchema.safeParse(payload);
-
-    if (!parsedPayload.success) {
-      return NextResponse.json({ error: 'Unauthorized', details: parsedPayload.error.errors }, { status: 401 });
-    }
+    const payload: CommunicationPayload = await authenticateRequest(request);
 
     const cluster = await prisma.cluster.findUnique({
       where: {
-        id: parsedPayload.data.clusterId,
-        userId: parsedPayload.data.userId,
+        id: payload.clusterId,
+        userId: payload.userId,
       },
     });
 
@@ -75,15 +57,12 @@ export async function POST(request: Request) {
       return new Response('Unauthorized', { status: 401 });
     }
 
-    // Parse and validate report
     const requestBody = await request.json();
     const parsedReport = reportSchema.safeParse(requestBody);
-
     if (!parsedReport.success) {
       return NextResponse.json({ error: 'Invalid request data', details: parsedReport.error.errors }, { status: 400 });
     }
 
-    // Update cluster last seen
     await prisma.cluster.update({
       where: { id: cluster.id },
       data: {
@@ -94,16 +73,14 @@ export async function POST(request: Request) {
 
     const resourcesWithCosts = parsedReport.data.orphanedResources.map((resource) => {
       const costType = getResourceCostType(resource.kind, resource.spec);
-
       return {
         ...resource,
         costType: costType,
       };
     });
 
-    // Create new snapshot with orphaned resources
     await prisma.$transaction(async (tx) => {
-      const snapshot = await tx.snapshot.create({
+      await tx.snapshot.create({
         data: {
           clusterId: cluster.id,
           createdBy: 'agent',
@@ -123,14 +100,16 @@ export async function POST(request: Request) {
           },
         },
       });
-
-      return snapshot;
     });
 
     await updateClusterScore(cluster.id, parsedReport.data.summary);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message && error.message.startsWith('Unauthorized')) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+
     console.error('Failed to process orphaned resources report:', error);
     return new Response('Internal Server Error', { status: 500 });
   }

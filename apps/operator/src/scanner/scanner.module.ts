@@ -33,6 +33,6 @@ const SCANNERS = [
     },
     ScannerService,
   ],
-  exports: [ScannerService],
+  exports: [ScannerService, SCANNERS_TOKEN],
 })
 export class ScannerModule {}
