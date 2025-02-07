@@ -21,7 +21,7 @@ export default function HeroSection() {
           rel="noopener noreferrer"
           className="group relative isolate flex items-center gap-2 rounded-full bg-purple-500/10 px-6 py-2.5 text-sm font-medium text-purple-600 transition-colors hover:bg-purple-500/15 dark:bg-purple-500/20 dark:text-purple-200 dark:hover:bg-purple-500/25"
         >
-          <span className="relative">✨ Don't forget to star us on GitHub</span>
+          <span className="relative">✨ Don&apos;t forget to star us on GitHub</span>
           <ArrowRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
           <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-purple-500/25 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
         </Link>
