@@ -12,6 +12,7 @@ export const OrcConfigSchema = z.object({
   namespace: z.string(),
   operatorName: z.string(),
   scanFrequency: z.string(),
+  updateFrequency: z.string(),
 });
 
 export type OrcConfigType = z.infer<typeof OrcConfigSchema>;
@@ -27,6 +28,7 @@ export class OrcConfig implements OrcConfigType {
   namespace: string;
   operatorName: string;
   scanFrequency: string;
+  updateFrequency: string;
 
   constructor(overrideConfig: Partial<OrcConfigType>) {
     const config = {
@@ -38,7 +40,8 @@ export class OrcConfig implements OrcConfigType {
       registrationToken: process.env.ORC_REGISTRATION_TOKEN,
       namespace: process.env.NAMESPACE || 'orc',
       operatorName: process.env.OPERATOR_NAME || 'orc-agent',
-      scanFrequency: process.env.SCAN_FREQUENCY || '*/30 * * * *',
+      scanFrequency: process.env.SCAN_FREQUENCY || '*/30 * * * *', // 30 minutes
+      updateFrequency: process.env.UPDATE_FREQUENCY || '*/10 * * * *', // 10 minutes
     };
 
     if (overrideConfig) {
