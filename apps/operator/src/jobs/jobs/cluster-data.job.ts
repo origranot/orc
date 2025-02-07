@@ -4,6 +4,7 @@ import { BaseJob } from '../base.job';
 import { KubeService } from '../../kube/kube.service';
 import { ConfigService } from '../../config/config.service';
 import { ReporterService } from '../../reporter/reporter.service';
+import { KubeCache } from '../../kube/cache/kube-cache.service';
 
 @Injectable()
 export class ClusterDataJob extends BaseJob {
@@ -11,6 +12,7 @@ export class ClusterDataJob extends BaseJob {
     schedulerRegistry: SchedulerRegistry,
     private readonly configService: ConfigService,
     private readonly kubeService: KubeService,
+    private readonly kubeCache: KubeCache,
     private readonly reporterService: ReporterService,
   ) {
     super(schedulerRegistry, { jobName: 'ClusterDataJob', runAtInit: false });
@@ -22,8 +24,8 @@ export class ClusterDataJob extends BaseJob {
 
   protected async handleJob(): Promise<void> {
     const version = await this.kubeService.getClusterVersion();
-    const nodesCount = (await this.kubeService.coreApi.listNode()).items.length;
-    await this.reporterService.sendClusterDataReport(version, nodesCount);
-    this.logger.log(`Cluster data report sent. Version: ${version}, Nodes: ${nodesCount}`);
+    const nodes = await this.kubeCache.getNodes();
+    await this.reporterService.sendClusterDataReport(version, nodes.length);
+    this.logger.log(`Cluster data report sent. Version: ${version}, Nodes: ${nodes.length}`);
   }
 }

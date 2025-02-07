@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { marketingConfig } from '@orc/web/config/marketing';
 
-const { footerSocials, footerNavs } = marketingConfig.footer;
+const { footerNavs } = marketingConfig.footer;
 
 export function SiteFooter() {
   return (

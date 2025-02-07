@@ -5,90 +5,89 @@ export const marketingConfig = {
     menuItem: [
       {
         id: 1,
-        label: "Features",
-        href: "/features",
+        label: 'Features',
+        href: '/features',
       },
       {
         id: 2,
-        label: "Pricing",
-        href: "#",
+        label: 'Pricing',
+        href: '#',
       },
       {
         id: 3,
-        label: "Careers",
-        href: "#",
+        label: 'Careers',
+        href: '#',
       },
       {
         id: 4,
-        label: "Contact Us",
-        href: "#",
+        label: 'Contact Us',
+        href: '#',
       },
-    ]
+    ],
   },
   footer: {
     footerNavs: [
       {
-        label: "Product",
+        label: 'Product',
         items: [
           {
-            href: "/",
-            name: "Email Collection",
+            href: '/',
+            name: 'Home',
           },
-          {
-            href: "/pricing",
-            name: "Pricing",
-          },
-          {
-            href: "/faq",
-            name: "FAQ",
-          },
+          // {
+          //   href: '/pricing',
+          //   name: 'Pricing',
+          // },
+          // {
+          //   href: '/faq',
+          //   name: 'FAQ',
+          // },
         ],
       },
 
       {
-        label: "Community",
+        label: 'Community',
         items: [
           {
-            href: "/",
-            name: "Discord",
+            href: '/',
+            name: 'Discord',
           },
           {
-            href: "/",
-            name: "Twitter",
+            href: '/',
+            name: 'Twitter',
           },
           {
-            href: "mailto:hello@chatcollect.com",
-            name: "Email",
+            href: 'mailto:hello@getorc.com',
+            name: 'Email',
           },
         ],
       },
       {
-        label: "Legal",
+        label: 'Legal',
         items: [
           {
-            href: "/terms",
-            name: "Terms",
+            href: '/terms',
+            name: 'Terms',
           },
 
           {
-            href: "/privacy",
-            name: "Privacy",
+            href: '/privacy',
+            name: 'Privacy',
           },
         ],
       },
     ],
     footerSocials: [
       {
-        href: "",
-        name: "Discord",
+        href: '',
+        name: 'Discord',
         icon: <DiscordLogoIcon className="h-4 w-4" />,
       },
       {
-        href: "",
-        name: "Twitter",
+        href: '',
+        name: 'Twitter',
         icon: <TwitterLogoIcon className="h-4 w-4" />,
       },
-    ]
+    ],
   },
-
-}
+};
