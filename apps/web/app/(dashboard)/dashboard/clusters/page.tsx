@@ -81,14 +81,16 @@ export default function ClustersPage() {
         />
       ) : (
         <>
-          <DataTable<GetAllClustersResponse>
-            columns={columns}
-            searchPlaceholder="Search clusters..."
-            queryKey={GET_ALL_CLUSTERS_QUERY_KEY}
-            queryFn={fetchClusters}
-            initialData={initialData}
-            toolbarActions={toolbarActions}
-          />
+          <div className="overflow-hidden">
+            <DataTable<GetAllClustersResponse>
+              columns={columns}
+              searchPlaceholder="Search clusters..."
+              queryKey={GET_ALL_CLUSTERS_QUERY_KEY}
+              queryFn={fetchClusters}
+              initialData={initialData}
+              toolbarActions={toolbarActions}
+            />
+          </div>
           <ClusterConnectModal
             isOpen={isImportModalOpen}
             onClose={() => setIsImportModalOpen(false)}
