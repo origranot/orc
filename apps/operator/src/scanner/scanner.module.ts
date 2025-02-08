@@ -9,10 +9,11 @@ import {
   PersistentVolumeScanner,
   NodeScanner,
   RoleScanner,
+  DeploymentScanner,
+  StatefulSetScanner,
+  PodScanner,
 } from './scanners';
 import { SCANNERS_TOKEN } from './scanners.token';
-import { DeploymentScanner } from './scanners/deployment.scanner';
-import { StatefulSetScanner } from './scanners/statefulset.scanner';
 
 const SCANNERS = [
   NamespaceScanner,
@@ -25,6 +26,7 @@ const SCANNERS = [
   RoleScanner,
   DeploymentScanner,
   StatefulSetScanner,
+  PodScanner,
 ];
 
 @Module({
