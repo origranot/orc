@@ -6,3 +6,6 @@ export * from './storage-class.scanner';
 export * from './persistent-volume.scanner';
 export * from './role.scanner';
 export * from './node.scanner';
+export * from './deployment.scanner';
+export * from './statefulset.scanner';
+export * from './pod.scanner';

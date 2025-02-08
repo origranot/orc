@@ -122,7 +122,7 @@ export class ScannerService {
 
         this.logger.debug(`Orphaned resource detected: ${resourceName}`, context);
 
-        if (this.configService.get().dryRun) {
+        if (this.configService.get().dryRun || !scanner.cleanup) {
           return {
             resource,
             isOrphaned,
