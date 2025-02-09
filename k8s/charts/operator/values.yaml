@@ -11,22 +11,30 @@ default_resources: &default_resources
   requests:
     cpu: 100m
     memory: 256Mi
+  limits:
+    cpu: 200m
+    memory: 512Mi
 
 rbac:
   clusterRole:
-    name: orc-operator-role
+    name: orc-operator-readonly-role
     rules:
       - apiGroups: ["*"]
         resources: ["*"]
         verbs: ["get", "list", "watch"]
+  role:
+    name: orc-operator-secrets-role
+    rules:
       - apiGroups: [""]
         resources: ["secrets"]
         verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   clusterRoleBinding:
     name: orc-operator-binding
+  roleBinding:
+    name: orc-operator-secrets-binding
 
 serviceaccounts:
-  orc-operator:
+  orc_operator:
     name: orc-operator
     namespace: *namespace
 
@@ -47,7 +55,7 @@ deployments:
     containers:
       - name: operator
         imageKey: operator
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources: *default_resources
         envFrom:
           - configMapRef:

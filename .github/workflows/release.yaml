@@ -7,7 +7,7 @@ concurrency:
 on:
   push:
     branches:
-      - master
+      - fix/limit-operator-permissions
 
 jobs:
   identify-changed-projects:
@@ -19,6 +19,7 @@ jobs:
     outputs:
       matrix: ${{ steps.prepare.outputs.matrix }}
       length: ${{ steps.prepare.outputs.length }}
+      operator_changed: ${{ steps.check-operator.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,6 +72,15 @@ jobs:
           fi
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
           echo "length=${#filtered_projects[@]}" >> $GITHUB_OUTPUT
+
+      - name: Check if operator changed
+        id: check-operator
+        run: |
+          if [[ ${{ steps.prepare.outputs.matrix }} == *"operator"* ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
 
   build-and-push:
     needs: identify-changed-projects
@@ -140,3 +150,23 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  trigger-helm-release:
+    needs: [identify-changed-projects, build-and-push]
+    if: needs.identify-changed-projects.outputs.operator_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Helm Chart Values
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              workflow_id: 'release-charts.yml',
+              ref: 'master',
+              inputs: {
+                operator_version: context.sha
+              }
+            });
