@@ -19,4 +19,5 @@ COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 5000
 
+# Run the operator
 CMD sh -c "node operator/main.js"
