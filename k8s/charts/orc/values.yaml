@@ -8,7 +8,7 @@ global:
   images:
     web:
       repository: origranot/orc/web
-      tag: latest
+      tag: dbd1f763e9d6ed7ed2faeb423c67bdbae5499f8a
 
 shared_annotations: &shared_annotations
   keel.sh/policy: force
@@ -51,7 +51,7 @@ deployments:
         image:
           registry: docker.io
           repository: redis
-          tag: 7.4-alpine
+          tag: dbd1f763e9d6ed7ed2faeb423c67bdbae5499f8a
         resources:
           requests:
             cpu: 100m
