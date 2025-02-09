@@ -181,7 +181,7 @@ jobs:
           yq -i '.global.images.operator.tag = "${{ github.sha }}"' k8s/charts/operator/values.yaml
 
           # Commit and push changes
-          git add k8s/charts/orc/values.yaml
+          git add k8s/charts/operator/values.yaml
           git commit -m "chore: update operator image tag to ${{ github.sha }}"
           git push
 
