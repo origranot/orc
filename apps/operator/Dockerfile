@@ -1,4 +1,3 @@
-# Use multi-stage builds to reduce the final image size
 FROM node:22-alpine3.20 AS builder
 
 RUN npm install -g pnpm
