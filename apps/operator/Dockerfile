@@ -17,8 +17,6 @@ WORKDIR /app
 COPY --from=builder /app/dist/apps/operator ./operator
 COPY --from=builder /app/node_modules ./node_modules
 
-# Expose the application port
 EXPOSE 5000
 
-# Start the application
 CMD sh -c "node operator/main.js"

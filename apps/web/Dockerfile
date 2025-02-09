@@ -23,8 +23,6 @@ COPY --from=builder /app/dist/apps/web ./web
 COPY --from=builder /app/libs/prisma ./libs/prisma
 COPY --from=builder /app/node_modules ./node_modules
 
-# Expose the application port
 EXPOSE 3000
 
-# Start the application
 CMD sh -c "npx nx run prisma:migrate-prod && cd web && npm start"

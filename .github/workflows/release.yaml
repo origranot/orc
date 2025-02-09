@@ -7,7 +7,7 @@ concurrency:
 on:
   push:
     branches:
-      - fix/limit-operator-permissions
+      - master
 
 jobs:
   identify-changed-projects:
@@ -169,7 +169,7 @@ jobs:
       - name: Update Chart Values
         run: |
           # Update the operator image tag in values.yaml
-          sed -i "s/tag: .*/tag: ${{ github.sha }}/" k8s/charts/orc/values.yaml
+          sed -i '/global:/,/operator:/{/tag:/{s/tag: .*/tag: ${{ github.sha }}/}}' k8s/charts/orc/values.yaml
           
           # Commit and push changes
           git add k8s/charts/orc/values.yaml
