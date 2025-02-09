@@ -11,7 +11,6 @@ RUN pnpm install --frozen-lockfile
 
 RUN npx nx build operator
 
-# Use a lighter image for the runtime
 FROM node:22-alpine3.20 AS runtime
 
 WORKDIR /app
