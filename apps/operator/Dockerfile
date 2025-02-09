@@ -14,7 +14,6 @@ FROM node:22-alpine3.20 AS runtime
 
 WORKDIR /app
 
-# Copy the build artifacts and node_modules from the builder stage
 COPY --from=builder /app/dist/apps/operator ./operator
 COPY --from=builder /app/node_modules ./node_modules
 
