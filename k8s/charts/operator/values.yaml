@@ -5,7 +5,7 @@ global:
   images:
     operator:
       repository: origranot/orc/operator
-      tag: latest
+      tag: 2f865f10409ad7087bd71075fc153973b9056728
 
 default_resources: &default_resources
   requests:
