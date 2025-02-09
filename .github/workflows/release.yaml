@@ -165,8 +165,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.name,
               workflow_id: 'release-charts.yml',
-              ref: 'master',
+              ref: context.ref,
               inputs: {
-                operator_version: context.sha
+                operator_version: '${{ github.sha }}'
               }
             });
