@@ -1,12 +1,10 @@
 namespace: &namespace orc
-
 global:
   registry: ghcr.io
   images:
     operator:
       repository: origranot/orc/operator
-      tag: latest
-
+      tag: 6401910f99e29445834d3a18c0a271158bd3ec8c
 default_resources: &default_resources
   requests:
     cpu: 100m
@@ -14,7 +12,6 @@ default_resources: &default_resources
   limits:
     cpu: 200m
     memory: 512Mi
-
 rbac:
   clusterRole:
     name: orc-operator-readonly-role
@@ -32,12 +29,10 @@ rbac:
     name: orc-operator-binding
   roleBinding:
     name: orc-operator-secrets-binding
-
 serviceaccounts:
   orc_operator:
     name: orc-operator
     namespace: *namespace
-
 configmaps:
   orc-cm:
     name: orc-cm
@@ -45,7 +40,6 @@ configmaps:
     data:
       ORC_CONSOLE_URL: https://getorc.com
       ORC_REGISTRATION_TOKEN: None
-
 deployments:
   operator:
     name: orc-agent
