@@ -164,6 +164,11 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.PAT }}
+          
+      - name: Install yq
+        run: |
+          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
 
       - name: Configure Git
         run: |
@@ -173,7 +178,7 @@ jobs:
       - name: Update Chart Values
         run: |
           # Update the operator image tag in values.yaml
-          sed -i '/global:/,/operator:/{/tag:/{s/tag: .*/tag: ${{ github.sha }}/}}' k8s/charts/operator/values.yaml
+          yq -i '.global.images.operator.tag = "${{ github.sha }}"' k8s/charts/operator/values.yaml
 
           # Commit and push changes
           git add k8s/charts/orc/values.yaml
