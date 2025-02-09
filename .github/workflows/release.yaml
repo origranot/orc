@@ -135,7 +135,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}/${{ matrix.project }}
-          tags: ${{ github.sha }}
+          tags: |
+            latest
+            ${{ github.sha }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -171,7 +173,7 @@ jobs:
       - name: Update Chart Values
         run: |
           # Update the operator image tag in values.yaml
-          sed -i '/global:/,/operator:/{/tag:/{s/tag: .*/tag: ${{ github.sha }}/}}' k8s/charts/orc/values.yaml
+          sed -i '/global:/,/operator:/{/tag:/{s/tag: .*/tag: ${{ github.sha }}/}}' k8s/charts/operator/values.yaml
 
           # Commit and push changes
           git add k8s/charts/orc/values.yaml
