@@ -149,6 +149,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  # If the operator project has changed, update the operator image tag in the chart values.yaml
   release-charts:
     needs: [identify-changed-projects, build-and-push]
     if: needs.identify-changed-projects.outputs.operator_changed == 'true'
