@@ -1,38 +1,35 @@
 namespace: &namespace orc
+
 global:
   registry: ghcr.io
   images:
     operator:
       repository: origranot/orc/operator
-      tag: 2f865f10409ad7087bd71075fc153973b9056728
+      tag: latest
+
 default_resources: &default_resources
   requests:
     cpu: 100m
     memory: 256Mi
-  limits:
-    cpu: 200m
-    memory: 512Mi
+
 rbac:
   clusterRole:
-    name: orc-operator-readonly-role
+    name: orc-operator-role
     rules:
       - apiGroups: ["*"]
         resources: ["*"]
         verbs: ["get", "list", "watch"]
-  role:
-    name: orc-operator-secrets-role
-    rules:
       - apiGroups: [""]
         resources: ["secrets"]
         verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   clusterRoleBinding:
     name: orc-operator-binding
-  roleBinding:
-    name: orc-operator-secrets-binding
+
 serviceaccounts:
-  orc_operator:
+  orc-operator:
     name: orc-operator
     namespace: *namespace
+
 configmaps:
   orc-cm:
     name: orc-cm
@@ -40,6 +37,7 @@ configmaps:
     data:
       ORC_CONSOLE_URL: https://getorc.com
       ORC_REGISTRATION_TOKEN: None
+
 deployments:
   operator:
     name: orc-agent
@@ -49,7 +47,7 @@ deployments:
     containers:
       - name: operator
         imageKey: operator
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources: *default_resources
         envFrom:
           - configMapRef:

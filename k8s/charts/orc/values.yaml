@@ -1,8 +1,10 @@
 namespace: &namespace getorc
 
 global:
+  # Global registry for the images
   registry: ghcr.io
 
+  # Images dictionary, this is used to define the images that will be used in the deployments
   images:
     web:
       repository: origranot/orc/web
