@@ -171,7 +171,7 @@ jobs:
         run: |
           # Update the operator image tag in values.yaml
           sed -i '/global:/,/operator:/{/tag:/{s/tag: .*/tag: ${{ github.sha }}/}}' k8s/charts/orc/values.yaml
-          
+
           # Commit and push changes
           git add k8s/charts/orc/values.yaml
           git commit -m "chore: update operator image tag to ${{ github.sha }}"
