@@ -4,7 +4,7 @@ global:
   images:
     operator:
       repository: origranot/orc/operator
-      tag: 6401910f99e29445834d3a18c0a271158bd3ec8c
+      tag: 2f865f10409ad7087bd71075fc153973b9056728
 default_resources: &default_resources
   requests:
     cpu: 100m
