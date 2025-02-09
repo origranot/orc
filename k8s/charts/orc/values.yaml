@@ -1,14 +1,12 @@
 namespace: &namespace getorc
 
 global:
-  # Global registry for the images
   registry: ghcr.io
 
-  # Images dictionary, this is used to define the images that will be used in the deployments
   images:
     web:
       repository: origranot/orc/web
-      tag: dbd1f763e9d6ed7ed2faeb423c67bdbae5499f8a
+      tag: latest
 
 shared_annotations: &shared_annotations
   keel.sh/policy: force
@@ -51,7 +49,7 @@ deployments:
         image:
           registry: docker.io
           repository: redis
-          tag: dbd1f763e9d6ed7ed2faeb423c67bdbae5499f8a
+          tag: 7.4-alpine
         resources:
           requests:
             cpu: 100m
