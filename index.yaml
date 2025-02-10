@@ -20,6 +20,22 @@ entries:
   orc:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2025-02-10T20:04:58.161028218Z"
+    dependencies:
+    - import-values:
+      - defaults
+      name: global-templates
+      repository: https://xmcyber.github.io/helm-global-templates/
+      version: 1.3.3
+    description: A Helm chart for Kubernetes
+    digest: f96108d2cba72a78a8bfbb1cd7646be12e78d64acaa0bdd0b3bcbed6f7af0ad4
+    name: orc
+    type: application
+    urls:
+    - https://github.com/origranot/orc/releases/download/orc-0.1.1/orc-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2025-02-09T23:16:28.632367495Z"
     dependencies:
     - import-values:
@@ -34,4 +50,4 @@ entries:
     urls:
     - https://github.com/origranot/orc/releases/download/orc-0.1.0/orc-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-09T23:16:28.632377213Z"
+generated: "2025-02-10T20:04:58.161039579Z"
