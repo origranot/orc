@@ -73,7 +73,6 @@ export async function getOrphanedResourcesTimeseries(clusterId: string, timeRang
 
     // Fill in gaps in the data if needed
     const filledData = fillDataGaps(timeseriesData, timeRange);
-
     return {
       success: true,
       data: filledData,
@@ -109,6 +108,9 @@ function fillDataGaps(data: TimeseriesDataPoint[], timeRange: number): Timeserie
   let currentTime = startDate.getTime();
   let dataIndex = 0;
 
+  // Calculate maximum acceptable gap in milliseconds (24 hours)
+  const maxGap = 24 * 60 * 60 * 1000;
+
   while (currentTime <= now.getTime()) {
     const currentDate = new Date(currentTime);
 
@@ -117,8 +119,23 @@ function fillDataGaps(data: TimeseriesDataPoint[], timeRange: number): Timeserie
       dataIndex++;
     }
 
-    // Use the most recent previous value, or 0 if none exists
-    const count = dataIndex > 0 ? data[dataIndex - 1].count : 0;
+    let count = 0;
+    const prevDataPoint = dataIndex > 0 ? data[dataIndex - 1] : null;
+    const nextDataPoint = dataIndex < data.length ? data[dataIndex] : null;
+
+    if (prevDataPoint || nextDataPoint) {
+      // If we have surrounding data points, check the gaps
+      const prevTime = prevDataPoint ? new Date(prevDataPoint.timestamp).getTime() : currentTime - maxGap - 1;
+      const nextTime = nextDataPoint ? new Date(nextDataPoint.timestamp).getTime() : currentTime + maxGap + 1;
+
+      // If current time is within acceptable range of a data point, use that value
+      if (currentTime - prevTime <= maxGap && prevDataPoint) {
+        count = prevDataPoint.count;
+      } else if (nextTime - currentTime <= maxGap && nextDataPoint) {
+        count = nextDataPoint.count;
+      }
+      // Otherwise, count remains 0
+    }
 
     filledData.push({
       timestamp: currentDate.toISOString(),
