@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import * as React from 'react';
 import { siteConfig } from '@orc/web/config/site';
 import Drawer from '@orc/web/ui/magicui/ui/drawer';
+import { ThemeToggle } from '@orc/web/components/theme-toggle';
 
 export const SiteHeader = () => {
   const { status } = useSession();
@@ -54,24 +55,30 @@ export const SiteHeader = () => {
   }, [status]);
 
   return (
-    <header className="sticky top-0 z-50 py-2 bg-background/60 backdrop-blur">
-      <div className="container flex items-center justify-between">
-        <Link href="/" title="brand-logo" className="relative flex items-center space-x-2">
-          <span className="text-xl font-bold">{siteConfig.name}</span>
-        </Link>
+    <>
+      <header className="sticky top-0 z-50 py-4 bg-background/80 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50">
+        <div className="container flex items-center justify-between">
+          <Link href="/" title="brand-logo" className="relative flex items-center space-x-2">
+            <span className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-gray-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+              {siteConfig.name}
+            </span>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6">
-          <div className="flex items-center gap-2">{authLinks}</div>
-        </div>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-6">
+            <div className="flex items-center gap-2">{authLinks}</div>
+          </div>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center gap-2">
-          <Drawer />
+          {/* Mobile Navigation */}
+          <div className="md:hidden flex items-center gap-2">
+            <Drawer />
+          </div>
         </div>
-      </div>
-      <hr className={cn('absolute w-full bottom-0 transition-opacity duration-300 ease-in-out', addBorder ? 'opacity-100' : 'opacity-0')} />
-    </header>
+      </header>
+      
+      {/* Theme Toggle - Fixed at bottom left */}
+      <ThemeToggle />
+    </>
   );
 };
 

@@ -4,7 +4,7 @@ import Marquee from '@orc/web/ui/magicui/ui/marquee';
 import { buttonVariants } from '@orc/web/ui/magicui/ui/button';
 import { cn } from '@orc/web/ui/custom-ui/utils';
 import { motion, useAnimation, useInView } from 'framer-motion';
-import { ChevronRight, Server, FileText, Wifi, Settings, ArrowDownCircle, Lock } from 'lucide-react';
+import { ChevronRight, Server, FileText, Wifi, Settings, ArrowDownCircle, Lock, Zap, Shield, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useId, useRef, useState } from 'react';
 import { SiKubernetes } from 'react-icons/si';
@@ -150,7 +150,7 @@ export default function CallToActionSection() {
   }, []);
 
   return (
-    <section id="cta">
+    <section id="cta" className="py-24">
       <div className="py-14">
         <div className="flex w-full flex-col items-center justify-center">
           <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
@@ -185,30 +185,28 @@ export default function CallToActionSection() {
               ))}
             </Marquee>
             <div className="absolute z-10">
-              <div className="mx-auto size-24 rounded-[2rem] border bg-white/10 p-3 shadow-2xl backdrop-blur-md dark:bg-black/10 lg:size-32">
+              <div className="mx-auto size-24 rounded-[2rem] border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 p-3 shadow-2xl backdrop-blur-md lg:size-32">
                 {/* Central icon remains the Kubernetes logo */}
-                <SiKubernetes className="mx-auto size-16 text-black dark:text-white lg:size-24" />
+                <SiKubernetes className="mx-auto size-16 text-slate-800 dark:text-white lg:size-24" />
               </div>
-              <div className="z-10 mt-4 flex flex-col items-center text-center text-primary">
-                <h1 className="text-3xl font-bold lg:text-4xl">Manage your Kubernetes resources effortlessly</h1>
-                <p className="mt-2">Streamline your cluster operations with powerful dashboards and real-time insights.</p>
-                <Link
-                  href="#"
-                  className={cn(
-                    buttonVariants({
-                      size: 'lg',
-                      variant: 'outline',
-                    }),
-                    'group mt-4 rounded-[2rem] px-6',
-                  )}
-                >
-                  Get Started
-                  <ChevronRight className="ml-1 size-4 transition-all duration-300 ease-out group-hover:translate-x-1" />
-                </Link>
+                             <div className="z-10 mt-4 flex flex-col items-center text-center text-white">
+                 <h1 className="text-3xl font-bold lg:text-4xl bg-gradient-to-r from-slate-300 via-gray-300 to-slate-400 bg-clip-text text-transparent">
+                   Transform your cluster hygiene
+                 </h1>
+                 <p className="mt-2 text-slate-300">
+                   Join teams that have automated their infrastructure cleanup and saved 10-30% on cloud costs.
+                 </p>
+                
+                <div className="mt-8 text-sm">
+                  <div className="flex items-center justify-center space-x-2">
+                    <Zap className="h-4 w-4 text-slate-400" />
+                    <span className="text-slate-400">Free forever plan</span>
+                  </div>
+                </div>
               </div>
-              <div className="absolute inset-0 -z-10 rounded-full bg-backtround opacity-40 blur-xl dark:bg-background" />
+              <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-slate-500/20 to-gray-500/20 opacity-40 blur-xl" />
             </div>
-            <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-b from-transparent to-background to-70% dark:to-background" />
+            <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-b from-transparent to-black to-70%" />
           </div>
         </div>
       </div>
