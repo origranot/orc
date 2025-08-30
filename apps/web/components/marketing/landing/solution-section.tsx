@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, DollarSign, Shield, Zap, CheckCircle } from 'lucide-react';
+import { Search, DollarSign, Shield, Zap, CheckCircle, GitBranch } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const features = [
@@ -13,7 +13,7 @@ const features = [
       "Severity classification system",
       "Multi-tenant resource mapping"
     ],
-    color: "from-slate-500 to-gray-500"
+    color: "from-blue-500 to-indigo-600"
   },
   {
     icon: <DollarSign className="h-6 w-6" />,
@@ -24,7 +24,7 @@ const features = [
       "Real-time cost tracking",
       "Team/customer waste breakdown"
     ],
-    color: "from-gray-500 to-slate-600"
+    color: "from-emerald-500 to-green-600"
   },
   {
     icon: <Zap className="h-6 w-6" />,
@@ -35,7 +35,18 @@ const features = [
       "CLI automation tools",
       "Quarantine mode support"
     ],
-    color: "from-slate-600 to-gray-700"
+    color: "from-purple-500 to-violet-600"
+  },
+  {
+    icon: <GitBranch className="h-6 w-6" />,
+    title: "Open Source & Community",
+    description: "Built in the open with community contributions and transparent development.",
+    details: [
+      "Transparent codebase for security",
+      "Community-driven improvements",
+      "Join our growing ecosystem"
+    ],
+    color: "from-orange-500 to-red-500"
   }
 ];
 
@@ -48,9 +59,9 @@ export default function SolutionSection() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center rounded-full bg-slate-800 px-3 py-1 text-sm font-medium text-slate-300 mb-4"
+            className="inline-flex items-center rounded-full bg-gradient-to-r from-slate-500/10 to-gray-500/10 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 mb-4"
           >
-            <CheckCircle className="mr-2 h-4 w-4 text-emerald-400" />
+            <CheckCircle className="mr-2 h-4 w-4" />
             ORC – The Solution
           </motion.div>
           <motion.h2
@@ -72,7 +83,7 @@ export default function SolutionSection() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -81,10 +92,10 @@ export default function SolutionSection() {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className="group"
             >
-                            <div className="group relative overflow-hidden rounded-lg border border-slate-700 bg-slate-800/50 p-6 transition-all duration-300 hover:bg-slate-800/70 hover:border-slate-600">
+                            <div className={`relative overflow-hidden rounded-2xl border border-slate-700 bg-slate-800/50 p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-slate-800/50 hover:-translate-y-1 group hover:border-opacity-60`}>
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br ${feature.color} text-white shadow-lg`}>
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-lg group-hover:shadow-xl transition-all duration-300`}>
                       {feature.icon}
                     </div>
                   </div>
@@ -96,7 +107,7 @@ export default function SolutionSection() {
                       {feature.details.map((detail, detailIndex) => (
                         <li key={detailIndex} className="flex items-start space-x-2">
                           <div className="flex-shrink-0 mt-1.5">
-                            <div className={`h-1.5 w-1.5 rounded-full bg-gradient-to-r ${feature.color}`} />
+                            <div className={`h-2 w-2 rounded-full bg-gradient-to-r ${feature.color} shadow-sm`} />
                           </div>
                           <span className="text-sm text-slate-300 leading-relaxed">
                             {detail}
@@ -107,8 +118,11 @@ export default function SolutionSection() {
                   </div>
                 </div>
                 
-                {/* Subtle hover effect */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-lg`} />
+                {/* Enhanced hover effect with color tint */}
+                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`} />
+                
+                {/* Subtle background color tint */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-3 transition-opacity duration-500 rounded-2xl`} />
               </div>
             </motion.div>
           ))}
@@ -120,8 +134,8 @@ export default function SolutionSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-16 text-center"
         >
-          <div className="inline-flex items-center rounded-lg bg-slate-800 px-6 py-4 border border-slate-700">
-            <Shield className="mr-3 h-5 w-5 text-emerald-400" />
+          <div className="inline-flex items-center rounded-2xl bg-gradient-to-r from-slate-500/10 to-gray-500/10 px-6 py-4 border border-slate-700">
+            <Shield className="mr-3 h-5 w-5 text-slate-400" />
             <span className="text-sm font-medium text-slate-300">
               ORC shifts from "just a cleanup script" to an infrastructure hygiene SaaS platform
             </span>

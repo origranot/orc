@@ -44,11 +44,6 @@ export default function HeroSection() {
         </p>
       
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-        <Button className="group bg-gradient-to-r from-slate-600 to-gray-600 hover:from-slate-700 hover:to-gray-700 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-          <Link href="/register">Start Free Trial</Link>
-          <ArrowRightIcon className="ml-2 size-5 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
-        </Button>
-        
         <Button variant="outline" className="group border-2 border-slate-700 text-slate-300 px-8 py-3 text-lg font-semibold rounded-xl hover:bg-slate-800 transition-all duration-300 transform hover:scale-105">
           <Link href="#demo">Book Demo</Link>
           <ArrowRightIcon className="ml-2 size-5 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
